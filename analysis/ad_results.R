@@ -1,5 +1,6 @@
 devtools::load_all()
-library(tidyverse)
+library(dplyr)
+library(tidyr)
 
 meta <- readRDS("./data/meta.Rds")
 
