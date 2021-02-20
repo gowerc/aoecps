@@ -1,0 +1,15 @@
+Package: aoeci
+Title: Analysis of AOE2 results
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Craig",
+           family = "Gower-Page",
+           role = c("aut", "cre"),
+           email = "craiggower@gmail.com")
+Description: Analysis of AOE2 results
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+imports: dplyr
