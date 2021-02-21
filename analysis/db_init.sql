@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS public.matches (
+    match_id text,
+    lobby_id text,
+    match_uuid text,
+    version text,
+    name text,
+    num_players integer,
+    num_slots integer,
+    average_rating integer,
+    cheats boolean,
+    full_tech_tree boolean,
+    ending_age integer,
+    expansion boolean,
+    game_type integer,
+    has_custom_content boolean,
+    has_password boolean,
+    lock_speed boolean,
+    lock_teams boolean,
+    map_size integer,
+    map_type integer,
+    pop integer,
+    ranked boolean,
+    leaderboard_id integer,
+    rating_type integer,
+    resources integer,
+    rms text,
+    scenario text,
+    server text,
+    shared_exploration boolean,
+    speed integer,
+    starting_age integer,
+    team_together boolean,
+    team_positions boolean,
+    treaty_length integer,
+    turbo boolean,
+    victory integer,
+    victory_time integer,
+    visibility integer,
+    opened integer,
+    started integer,
+    finished integer
+);
+
+
+CREATE TABLE IF NOT EXISTS public.meta (
+    version text,
+    meta jsonb
+);

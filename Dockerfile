@@ -7,20 +7,26 @@ RUN apt-get update && apt-get install -y \
     curl \
     wget \
     libz-dev \
+    libxml2-dev \
+    libcurl4-openssl-dev \
+    unixodbc-dev \
+    libpq-dev \
+    gnupg2 \
     git
 
-ENV RENV_PATHS_CACHE=/renv/cache
-ENV RENV_PATHS_SOURCE=/renv/source
-ENV RENV_PATHS_BINARY=/renv/bin
-ENV RENV_VERSION=0.12.5
+## Install postgressql-cleint 13 (to communicate with db from the command line)
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list
+RUN apt-get update && apt-get -y install postgresql-client-13
+
+
+ENV RENV_PATHS_CACHE=/renv/cache \
+    RENV_PATHS_SOURCE=/renv/source \
+    RENV_PATHS_BINARY=/renv/bin \
+    RENV_VERSION=0.12.5
 
 RUN mkdir /app
 WORKDIR /app
-COPY . .
-
-RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))"
-RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
-
 
 
 

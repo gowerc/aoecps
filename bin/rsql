@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+export PGPASSWORD=mypassword
+
+psql \
+    --host db \
+    --port 5432 \
+    --username gowerc \
+    -f $1 \
+    aoe 
+    
+

@@ -1,6 +1,7 @@
-devtools::load_all()
+pkgload::load_all()
 library(parallel)
 library(doParallel)
+library(languageserver)
 library(doRNG)
 library(scales)
 library(dplyr)
@@ -32,7 +33,7 @@ cl <- makeCluster(8)
 
 devnull <- clusterEvalQ(cl, {
     library(tidyverse)
-    devtools::load_all()
+    pkgload::load_all()
 })
 
 doParallel::registerDoParallel(cl)

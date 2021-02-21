@@ -7,24 +7,20 @@ services:
       dockerfile: ./Dockerfile
     volumes:
     - "renv:/renv"
+    - ".:/app"
+    command: tail -f /dev/null
 
-  mongo:
-    image: mongo:4.2
-    restart: always
-    volumes: 
-    - "dbdata:/data/db"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-
-  mongo-express:
-    image: mongo-express:0.54
-    restart: always
+  db:
+    image: postgres:13.2
     ports:
-    - 8081:8081
+      - 5432:5432
+    volumes: 
+    - "dbdata:/var/lib/postgresql/data"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+        POSTGRES_DB: aoe
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: mypassword
+        PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:
   dbdata:
