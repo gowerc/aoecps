@@ -11,7 +11,7 @@ con <- get_connection()
 
 started_df <- dbGetQuery(
     conn = con,
-    "select max(started) as started from matches"
+    "select max(started) as started from match_meta"
 )
 
 timestamp <- started_df$started[[1]]
@@ -27,53 +27,34 @@ CUTOFF <- (Sys.time() - hours(20)) %>%
     round()
 
 while(timestamp < CUTOFF){
-
-    message("Getting :", as_datetime(timestamp))
-
+    
+    message("Getting: ", as_datetime(timestamp))
+    
     data_parsed <- api_matches(count = 1000, since = timestamp) %>%
         jsonlite::fromJSON() %>%
         tibble() 
 
-    players <- data_parsed %>%
+    match_players <- data_parsed %>%
         select(match_id, players) %>%
-        unnest(players)
-
-    matches <- data_parsed %>%
+        unnest(players) %>%
+        filter(!is.na(won))
+    
+    match_meta <- data_parsed %>%
         select(-players)
-
-    ### Remove duplicate entries
-    dbExecute(
-        conn = con,
-        sprintf(
-            "DELETE FROM matches where match_id in ('%s');",
-            paste0(matches$match_id, collapse = "','")
-        )
-    )
-
-    dbExecute(
-        conn = con,
-        sprintf(
-            "DELETE FROM players where match_id in ('%s');",
-            paste0(matches$match_id, collapse = "','")
-        )
-    )
-
-    dbWriteTable(
-        conn = con, 
-        name = "matches", 
-        value = matches, 
-        append = TRUE
-    )
-
-    dbWriteTable(
-        conn = con, 
-        name = "players", 
-        value = players, 
-        append = TRUE
+    
+    dbInsert(
+        con = con,
+        name = "match_meta", 
+        value = match_meta,
+        key = "match_id"
     )
     
-    timestamp <-  max(matches$started)
+    dbInsert(
+        con = con,
+        name = "match_players", 
+        value = match_players,
+        key = c("match_id", "profile_id")
+    )
+    
+    timestamp <-  max(match_meta$started)
 }
-
-
-

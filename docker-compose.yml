@@ -6,7 +6,6 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     volumes:
-    - "renv:/renv"
     - ".:/app"
     command: tail -f /dev/null
 
@@ -19,9 +18,8 @@ services:
     environment:
         POSTGRES_DB: aoe
         POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: mypassword
+        POSTGRES_PASSWORD: Hunter2
         PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:
   dbdata:
-  renv:

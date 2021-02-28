@@ -1,13 +1,12 @@
 #!/bin/bash
 
-
-export PGPASSWORD=mypassword
+source ./bin/config
 
 psql \
-    --host db \
-    --port 5432 \
-    --username gowerc \
+    --host $APP_HOST \
+    --port $APP_PORT \
+    --username $APP_USER \
     -f $1 \
-    aoe 
-    
+    $APP_DB 
+
 

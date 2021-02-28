@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.matches (
+CREATE TABLE IF NOT EXISTS public.match_meta (
     match_id text,
     lobby_id text,
     match_uuid text,
@@ -38,11 +38,41 @@ CREATE TABLE IF NOT EXISTS public.matches (
     visibility integer,
     opened integer,
     started integer,
-    finished integer
+    finished integer,
+    PRIMARY KEY (match_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.match_players (
+    match_id text,
+    profile_id integer,
+    steam_id text,
+    name text,
+    clan boolean,
+    country text,
+    slot integer,
+    slot_type integer,
+    rating integer,
+    rating_change integer,
+    games boolean,
+    wins boolean,
+    streak boolean,
+    drops boolean,
+    color integer,
+    team integer,
+    civ integer,
+    won boolean,
+    PRIMARY KEY (match_id, profile_id),
+    CONSTRAINT fk_matchid
+      FOREIGN KEY(match_id) 
+        REFERENCES match_meta(match_id)
 );
 
 
-CREATE TABLE IF NOT EXISTS public.meta (
+CREATE TABLE IF NOT EXISTS public.game_meta (
     version text,
-    meta jsonb
+    type text,
+    id integer,
+    string text,
+    PRIMARY KEY (version, type, id)
 );
+
