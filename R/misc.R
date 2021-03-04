@@ -74,4 +74,17 @@ get_civclass <- function() {
     ) %>%
         mutate(across(-matches("civ"), function(x) !is.na(x)))
     return(civclass)
+}   
+
+
+
+#' @export 
+as_footnote <- function(x, width = 110){
+    x %>%
+        paste(collapse = " ") %>%
+        strinr::str_split("<br/>") %>%
+        flatten_chr() %>%
+        str_trim() %>% 
+        stringr::str_wrap(width = width) %>%
+        paste(collapse = "\n")
 }

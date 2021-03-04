@@ -11,7 +11,8 @@ dbupdate:
 
 outputs=\
 	outputs/g_ia_slice.png\
-	outputs/g_iae12_bt_CI.png\
+	outputs/g_iae12_bt_civ.png\
+	outputs/g_iae12_bt_cc.png\
 	outputs/g_iae12_ELODIST.png\
 	outputs/g_iae12_PR.png\
 	outputs/g_iae12_VERDIST.png\
@@ -28,18 +29,27 @@ outputs/report.html: analysis/report.Rmd $(outputs)
         )"
 
 
+
+###### VADs
+
 data/iae12.Rds: analysis/ad_iae12.R
 	Rscript $<
 
-data/m_iae12_bt.Rds: analysis/m_iae12_bt.R data/iae12.Rds
+
+
+###### Outputs
+
+
+outputs/g_iae12_bt_civ.png: analysis/g_iae12_bt_civ.R data/iae12.Rds
+	Rscript $<
+
+outputs/g_iae12_bt_cc.png: analysis/g_iae12_bt_cc.R data/iae12.Rds
 	Rscript $<
 
 outputs/g_ia_slice.png: analysis/g_ia_slice.R data/iae12.Rds
 	Rscript $<
 
-outputs/g_iae12_bt_CI.png: analysis/g_iae12_bt.R data/m_iae12_bt.Rds
-	Rscript $<
-
+# g_iae12 collection
 outputs/g_iae12_ELODIST.png: analysis/g_iae12.R data/iae12.Rds
 	Rscript $<
 

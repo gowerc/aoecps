@@ -9,19 +9,18 @@ library(purrr)
 
 
 dat <- readRDS("./data/iae12.Rds") %>%
-    filter(s1_rating >= 600 & s2_rating >= 600)
+    filter(s1_rating >= 800 & s2_rating >= 800)
 
 dat2 <- bind_rows(
     dat %>% select(civ = s1_civ, won = s1_won, elo = s1_rating),
     dat %>% select(civ = s2_civ, won = s2_won, elo = s2_rating)
 ) %>%
-    mutate(elo = as.numeric(elo)) %>% 
-    mutate(elo = if_else(elo >= 2200, 2200, elo))
+    mutate(elo = as.numeric(elo))
 
 
-get_slice <- function(y, dat, spread){
-    ub <- y + spread
-    lb <- y - spread
+get_slice <- function(y, dat, spread = 0.1){
+    ub <- exp(log(y) + 0.1)
+    lb <- exp(log(y) - 0.1)
     
     dat %>%
         filter(elo >= lb, elo <= ub) %>%
@@ -31,45 +30,37 @@ get_slice <- function(y, dat, spread){
         mutate(plci = p - 1.96 * sqrt((p * (1 - p)) / n)) %>%
         mutate(puci = p + 1.96 * sqrt((p * (1 - p)) / n)) %>%
         mutate(pr = (n / sum(n)) * 100) %>%
-        mutate(y = y)
+        mutate(y = y) %>%
+        mutate(limit_upper = ub, limit_lower = lb)
 }
-
-spread = 150
 
 cuts <- seq(
     from = signif(min(dat2$elo), 2),
     to = signif(max(dat2$elo), 2),
-    by = 10
+    by = 20
 )
 
-cuts <- cuts[
-    (cuts - spread) >= min(dat2$elo) &
-    (cuts + spread) <= max(dat2$elo)
-]
 
 res <- map_df(cuts, get_slice, dat = dat2, spread = spread) 
 
+res2 <- res %>%
+    filter(limit_lower >= min(dat2$elo), limit_upper <= max(dat2$elo))
+
 footnotes <- c(
-    "Win rates are calculated at each point X after filtering the data using",
-    "a +- 150 ELO margin. ELOs > 2200 have been set to 2200 to avoid",
-    "spurious results.",
-    "All matches have been included where both players have a known ELO > 600"
+    "Win rates are calculated at each point X after filtering the data to",
+    "only include matches where log(x) - 0.1 <= log(x) <= log(x) + 0.1<br/>",
+    "All matches where both players have a known ELO > 800 are considered"
 ) %>%
-    paste0(collapse = " ") %>%
-    str_split("\\.") %>%
-    flatten_chr() %>%
-    paste0(".") %>% 
-    str_trim() %>%
-    str_wrap(width = 110) %>%
-    paste0(collapse = "\n")
+    as_footnote()
 
 
-p <- ggplot(data = res, aes(ymin = plci, y = p, ymax = puci, x = y, group = civ, col = civ, fill = civ)) +
+p <- ggplot(data = res2, aes(ymin = plci, y = p, ymax = puci, x = y, group = civ, col = civ, fill = civ)) +
     geom_ribbon() +
     geom_hline(yintercept = 0.5, col = "red") +
     theme_bw() +
-    scale_y_continuous(breaks = pretty_breaks(3)) +
-    scale_x_continuous(breaks = pretty_breaks(3)) +
+    scale_y_continuous(breaks = pretty_breaks(4)) +
+    scale_x_continuous(breaks = pretty_breaks(4)) +
+    ggtitle("Civilisation Win Rate by ELO") + 
     ylab("Win Rate") +
     xlab("ELO") +
     facet_wrap(~civ) + 

@@ -33,7 +33,7 @@ Where:
 Fitting this model to the available data results in the following plot:
 
 
-<img src="../outputs/g_iae12_bt_CI.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_bt_civ.png" width="75%" style="display: block; margin: auto;" />
 
 Each point represents the estimated performance score for the corresponding civisation whilst the interval around the point represents the 95% credible interval, that is the interval in which there is a 95% chance that the true value exists within. The ELO Delta (25) point acts as a reference to show us the relative increase in performance score based upon a 25 point ELO difference between players. Clearly the impact of ELO massively outweighs the impact of civ choice. 
 

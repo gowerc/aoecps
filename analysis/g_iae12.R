@@ -12,6 +12,15 @@ dat <- readRDS("./data/iae12.Rds") %>%
     mutate(elo = (s1_rating + s2_rating)/ 2)
 
 
+cuts <- seq(min(dat$elo), max(dat$elo) + 100, by = 100)
+
+pdat <- dat %>%
+    mutate(elocat = cut(elo, cuts, right = FALSE, dig.lab = 4)) %>%
+    group_by(elocat) %>%
+    tally() %>%
+    mutate(p = round(n / sum(n) * 100,2) %>% paste0("%")) %>%
+    mutate(y = n + max(n) * 0.025)
+
 strings <- dat %>%
     summarise(
         min = min(elo),
@@ -29,14 +38,26 @@ strings <- dat %>%
 
 
 
-p <- ggplot(dat, aes(x = elo)) +
-    geom_density(fill = "grey", alpha = 0.7) +
+p <- ggplot(pdat, aes(x = elocat, y = n)) +
+    geom_bar(stat = "identity") +
     theme_bw() +
-    ylab("Density") +
-    scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.05))) +
-    scale_x_continuous(breaks = pretty_breaks(10)) +
+    ylab("Count") +
+    scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
+    scale_x_discrete(expand = expansion(c(0, 0.06))) +
     xlab("ELO") +
-    annotate( geom = "text", label = strings, x = 2600, y = Inf, hjust = 1, vjust = 1.1)
+    annotate(
+        geom = "text",
+        label = strings,
+        x = max(as.numeric(pdat$elocat)),
+        y = Inf,
+        hjust = 1,
+        vjust = 1.1
+    ) +
+    ggtitle("Summary of ELO Distribution") +
+    geom_text(aes(y = y, label = p), hjust = 0.2, angle = 35)+ 
+    theme(
+        axis.text.x = element_text(hjust = 1, angle = 35)
+    )
 
 
 ggsave(
@@ -53,7 +74,8 @@ p <- ggplot(data = dat, aes(x = oversion)) +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(8), expand = expansion(c(0, 0.05))) +
     xlab("Patch Version") +
-    ylab("Number of Games")
+    ylab("Number of Games") +
+    ggtitle("Number of Matches from each Patch")
 
 ggsave(
     plot = p,
@@ -85,6 +107,7 @@ p <- ggplot(data = sdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
     geom_hline(yintercept = 0.5, col = "red") +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(10)) +
+    ggtitle("Naive Win Rate By Civilisation") + 
     theme(
         axis.text.x = element_text(angle = 50, hjust = 1),
         plot.caption = element_text(hjust = 0)
@@ -104,19 +127,20 @@ ggsave(
 
 sdat2 <- sdat %>%
     arrange(desc(n)) %>%
-    mutate(civ = fct_inorder(civ))
+    mutate(civ = fct_inorder(civ)) 
 
 p <- ggplot(data = sdat2, aes(y = pr, x = civ)) +
-    geom_bar(stat = "identity") + 
-    geom_hline(yintercept = 1/nrow(sdat2) * 100, col = "red") +
+    geom_bar(stat = "identity") +
+    geom_hline(yintercept = 1 / nrow(sdat2) * 100, col = "red") +
     theme_bw() +
-    scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.05))) +
+    scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
     theme(
         axis.text.x = element_text(angle = 50, hjust = 1),
         plot.caption = element_text(hjust = 0)
     ) +
     ylab("Play Rate") +
-    xlab("")
+    xlab("") +
+    ggtitle("Play Rate by Civilisation") 
 
 
 ggsave(
