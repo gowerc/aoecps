@@ -6,18 +6,10 @@ library(tidyr)
 library(forcats)
 library(stringr)
 
-fit <- readRDS("./data/m_iae12_bt.Rds")
-
-efit <- rstan::extract(fit)
+pdat <- readRDS("./data/m_iae12_bt.Rds")
 
 
-x <- as.matrix(efit$alpha)
-dat <- tibble(index = 1:nrow(x))
-for (i in 1:ncol(x)) dat[civmap(i)] <- x[, i]
-dat["ELO Delta (25)"] <- efit$beta
-
-
-dat2 <- dat %>%
+pdat2 <- pdat %>%
     pivot_longer(-index, names_to = "KEY", values_to = "VAL") %>%
     group_by(KEY) %>%
     summarise(
@@ -28,12 +20,25 @@ dat2 <- dat %>%
     arrange(desc(med)) %>%
     mutate(KEY = fct_inorder(KEY))
 
-performance_mid <- dat2 %>%
+
+performance_mid <- pdat2 %>%
     filter(KEY != "ELO Delta (25)") %>%
     pull(med) %>%
     mean()
 
-p <- ggplot(data = dat2, aes(x = KEY, group = KEY, ymin = lci, ymax = uci, y = med)) +
+
+footnotes <- paste0(
+    c(
+        "The Y-axis represents the difference in the performance",
+        "rating from the reference civilisation (Vikings).",
+        "The red line represents the mean performance rating across all",
+        "civilisations."
+    ),
+    collapse = " "
+) %>%
+    str_wrap(width = 110)
+
+p <- ggplot(data = pdat2, aes(x = KEY, group = KEY, ymin = lci, ymax = uci, y = med)) +
     geom_errorbar(width = 0.3) +
     geom_point() +
     geom_hline(yintercept = performance_mid, col = "red") +
@@ -45,14 +50,7 @@ p <- ggplot(data = dat2, aes(x = KEY, group = KEY, ymin = lci, ymax = uci, y = m
     ylab("Performance Score Delta") +
     xlab("") +
     scale_y_continuous(breaks = pretty_breaks(10)) +
-    labs(
-        caption = paste0(c(
-            "The Y-axis represents the difference in the performance",
-            "rating from the reference civilisation (Vikings).",
-            "The red line represents the mean performance rating across all",
-            "civilisations."
-        ), collapse = " ") %>% str_wrap(width = 110)
-    )
+    labs( caption = footnotes)
 
 
 ggsave(

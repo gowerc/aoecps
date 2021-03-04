@@ -15,7 +15,7 @@ h1,h2,h3,h4 {
 }
 </style>
 
-## Objectives
+## Introduction
 
 ## Data
 
@@ -30,7 +30,7 @@ Where:
 - $\lambda_{ijk} = X_i - X_j + D_k$  
 - $D_k$ is the difference in ELO rating between the two players in match $k$ divided by 25
 
-Fitting this model to the available data results in the following:
+Fitting this model to the available data results in the following plot:
 
 
 <img src="../outputs/g_iae12_bt_CI.png" width="75%" style="display: block; margin: auto;" />

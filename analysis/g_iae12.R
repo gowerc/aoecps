@@ -4,6 +4,7 @@ library(ggplot2)
 library(scales)
 library(stringr)
 library(forcats)
+library(tidyr)
 
 
 dat <- readRDS("./data/iae12.Rds") %>%

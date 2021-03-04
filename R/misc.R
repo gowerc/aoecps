@@ -50,3 +50,28 @@ logit <- function(x){
 invlogit <- function(x){
     exp(x)/(1+exp(x))
 }
+
+
+
+#' @export
+get_civclass <- function() {
+    civclass <- readr::read_csv(
+        "./data/raw/civclass.csv",
+        col_types = readr::cols(
+            civ = readr::col_character(),
+            infantry = readr::col_character(),
+            monk = readr::col_character(),
+            cavalry = readr::col_character(),
+            naval = readr::col_character(),
+            archer = readr::col_character(),
+            elephant = readr::col_character(),
+            defensive = readr::col_character(),
+            siege = readr::col_character(),
+            camel = readr::col_character(),
+            gunpowder = readr::col_character(),
+            `cavalry archer` = readr::col_character()
+        )
+    ) %>%
+        mutate(across(-matches("civ"), function(x) !is.na(x)))
+    return(civclass)
+}
