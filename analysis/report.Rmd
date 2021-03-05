@@ -1,5 +1,5 @@
 ---
-title: AOE Civilisation 1v1 Performance Statistics
+title: Age of Empires 2 Civilisation 1v1 Performance Statistics
 date: "`r format(Sys.time(), '%d %b %Y')`"
 output:
     html_document:
