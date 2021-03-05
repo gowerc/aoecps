@@ -34,7 +34,7 @@ try and identify areas of imbalance within the game. In particular, unless other
 analysis is based on 1v1 data from ranked matches played on Arabia where both players have an 
 ELO > 1200. 
 
-In total `r prettyNum(nmatches,big.mark=",",scientific=FALSE)` matches with a known results were recorded between
+In total `r prettyNum(nmatches,big.mark=",",scientific=FALSE)` matches with a known result were recorded between
 `r as.Date(mindate)` and `r as.Date(maxdate)` of which `r prettyNum(nvalid,big.mark=",",scientific=FALSE)`
 met the above mentioned criteria and were included into the analysis.  Data is sourced from https://aoe2.net/.
 
@@ -88,9 +88,9 @@ That is to say our model predicts that, with no difference in ELO between the tw
 | -0.3 | 42.6%|
 | -0.4 | 40.1%|
 
-Note that an obvious limitation to this modeling approach is that it assume linearity in the performance scores, that is to say it assumes that if team A beat team B and team B beat team C then team A should also beat team C. Obviously it is clear this logic does not hold in AOE2 where team superiority is multifaceted. Regardless, the model still gives us a good estimate of the teams average performance and in theory a large part of the confidence intervals will represent the uncertainty of the teams performance due to the multidimensional nature of the game. 
+Note that an obvious limitation to this modeling approach is that it assumes linearity in the performance scores, that is to say it assumes that if team A beats team B and team B beats team C then team A should also beat team C. Obviously it is clear this logic does not hold in AOE2 where team superiority is multifaceted. Regardless, the model still gives us a good estimate of the teams average performance. 
 
-An alternative to civilisations is instead to focus on the civilisation classification to see if any particular class of civilisation is showing evidence of being dominant. Using the classes defined in game we get the following performance metrics:
+An alternative to modeling the civilisations performance is instead to focus on the civilisation classification to see if any particular class of civilisation is showing evidence of being dominant. Using the classes defined in game we get the following performance metrics:
 
 <img src="../outputs/g_iae12_bt_cc.png" width="75%" style="display: block; margin: auto;" />
 <br/> <br/>
