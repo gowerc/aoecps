@@ -37,6 +37,11 @@ strings <- dat %>%
         
 
 
+footnotes <- c(
+    "ELO is calculated as the mean of the two players in the match"
+) %>%
+    as_footnote()
+
 
 p <- ggplot(pdat, aes(x = elocat, y = n)) +
     geom_bar(stat = "identity") +
@@ -56,8 +61,11 @@ p <- ggplot(pdat, aes(x = elocat, y = n)) +
     ggtitle("Summary of ELO Distribution") +
     geom_text(aes(y = y, label = p), hjust = 0.2, angle = 35)+ 
     theme(
-        axis.text.x = element_text(hjust = 1, angle = 35)
-    )
+        axis.text.x = element_text(hjust = 1, angle = 35),
+         plot.caption = element_text(hjust = 0)
+    ) + 
+    labs( caption = footnotes)
+
 
 
 ggsave(
@@ -75,7 +83,7 @@ p <- ggplot(data = dat, aes(x = oversion)) +
     scale_y_continuous(breaks = pretty_breaks(8), expand = expansion(c(0, 0.05))) +
     xlab("Patch Version") +
     ylab("Number of Games") +
-    ggtitle("Number of Matches from each Patch")
+    ggtitle("Number of Matches per Patch")
 
 ggsave(
     plot = p,
@@ -138,7 +146,7 @@ p <- ggplot(data = sdat2, aes(y = pr, x = civ)) +
         axis.text.x = element_text(angle = 50, hjust = 1),
         plot.caption = element_text(hjust = 0)
     ) +
-    ylab("Play Rate") +
+    ylab("Play Rate (%)") +
     xlab("") +
     ggtitle("Play Rate by Civilisation") 
 

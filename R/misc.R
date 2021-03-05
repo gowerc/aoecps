@@ -54,9 +54,10 @@ invlogit <- function(x){
 
 
 #' @export
+#' @import readr
 get_civclass <- function() {
-    civclass <- readr::read_csv(
-        "./data/raw/civclass.csv",
+    civclass <- read_csv(
+        file = "./data/raw/civclass.csv",
         col_types = readr::cols(
             civ = readr::col_character(),
             infantry = readr::col_character(),
@@ -74,6 +75,35 @@ get_civclass <- function() {
     ) %>%
         mutate(across(-matches("civ"), function(x) !is.na(x)))
     return(civclass)
+}
+
+
+#' @export
+#' @import readr
+get_civunit <- function() {
+    civunit <- read_csv(
+        file = "./data/raw/civunit.csv",
+        col_types = cols(
+            civ = col_character(),
+            Arbalester = col_character(),
+            `Hand Cannoneer` = col_character(),
+            `Heavy Cavalry Archer` = col_character(),
+            Champion = col_character(),
+            Halberdier = col_character(),
+            `Elite Eagle Warrior` = col_character(),
+            Hussar = col_character(),
+            Paladin = col_character(),
+            `Heavy Camel` = col_character(),
+            `Battle Elephant` = col_character(),
+            `Steppe Lancer` = col_character(),
+            `Siege Ram` = col_character(),
+            `Siege Onager` = col_character(),
+            `Heavy Scorpion` = col_character(),
+            `Bombard Cannon` = col_character()
+        )
+    ) %>%
+        mutate(across(-matches("civ"), function(x) !is.na(x)))
+    return(civunit)
 }   
 
 
@@ -82,9 +112,9 @@ get_civclass <- function() {
 as_footnote <- function(x, width = 110){
     x %>%
         paste(collapse = " ") %>%
-        strinr::str_split("<br/>") %>%
-        flatten_chr() %>%
-        str_trim() %>% 
+        stringr::str_split("<br/>") %>%
+        purrr::flatten_chr() %>%
+        stringr::str_trim() %>% 
         stringr::str_wrap(width = width) %>%
         paste(collapse = "\n")
 }

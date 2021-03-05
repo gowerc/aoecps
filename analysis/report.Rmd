@@ -1,5 +1,5 @@
 ---
-title: AOE Civilisation Performance Statistics
+title: AOE Civilisation 1v1 Performance Statistics
 date: "`r format(Sys.time(), '%d %b %Y')`"
 output:
     html_document:
@@ -15,9 +15,39 @@ h1,h2,h3,h4 {
 }
 </style>
 
+```{r, echo=FALSE, results=FALSE, message=FALSE}
+pkgload::load_all()
+library(dbplyr)
+library(lubridate)
+con <- get_connection()
+nmatches <- tbl(con, "match_meta") %>% tally() %>% collect() %>% pull(n) %>% as.integer()
+maxdate <- tbl(con, "match_meta") %>% summarise(s = max(started, na.rm = TRUE)) %>% collect() %>% pull(s) %>% as_datetime()
+mindate <- tbl(con, "match_meta") %>% summarise(s = min(started, na.rm = TRUE)) %>% collect() %>% pull(s) %>% as_datetime()
+dat <- readRDS("./data/iae12.Rds") %>% filter(ANLFL)
+nvalid <- nrow(dat)
+```
+
 ## Introduction
 
-## Data
+This document attempts to outline civilisation 1v1 performance metrics in order to
+try and identify areas of imbalance within the game. In particular, unless otherwise stated, the 
+analysis is based on 1v1 data from ranked matches played on Arabia where both players have an 
+ELO > 1200. 
+
+In total `r prettyNum(nmatches,big.mark=",",scientific=FALSE)` matches with a known results were recorded between
+`r as.Date(mindate)` and `r as.Date(maxdate)` of which `r prettyNum(nvalid,big.mark=",",scientific=FALSE)`
+met the above mentioned criteria and were included into the analysis.  Data is sourced from https://aoe2.net/.
+
+## Descriptives
+
+
+<img src="../outputs/g_iae12_ELODIST.png" width="75%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+<img src="../outputs/g_iae12_PR.png" width="75%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+<img src="../outputs/g_iae12_VERDIST.png" width="75%" style="display: block; margin: auto;" />
 
 
 ## Primary Results
@@ -30,21 +60,21 @@ Where:
 - $\lambda_{ijk} = X_i - X_j + D_k$  
 - $D_k$ is the difference in ELO rating between the two players in match $k$ divided by 25
 
-Fitting this model to the available data results in the following plot:
+Fitting this model to the available data results in the following performance score estimates:
 
 
 <img src="../outputs/g_iae12_bt_civ.png" width="75%" style="display: block; margin: auto;" />
 
-Each point represents the estimated performance score for the corresponding civisation whilst the interval around the point represents the 95% credible interval, that is the interval in which there is a 95% chance that the true value exists within. The ELO Delta (25) point acts as a reference to show us the relative increase in performance score based upon a 25 point ELO difference between players. Clearly the impact of ELO massively outweighs the impact of civ choice. 
+Each point represents the estimated performance score for the corresponding civilisation whilst the interval around the point represents the 95% confidence interval, which can be naively thought of to mean that there is a 95% chance that the true value lies somewhere within this interval. The ELO Delta (25) point acts as a reference to show us the relative increase in performance score based upon a 25 point ELO difference between players. Clearly the impact of ELO massively outweighs the impact of civilisation choice. 
 
-You may also notice that the performance score for Vikings is 0 and has no credible interval; this is due to how the maths works in that it requires a reference point to calculate all the other values off from. The choice of the reference is completely arbitrary and in this case I chose vikings because they are the last civisation alphabetically. This is to say that the performance scores you see in this graph represent the difference between that civilisations performance score and the Vikings performance score (though do not confuse this with thinking that these performance scores represent how the civilisations fare against the Vikings specifically!).
+You may also notice that the performance score for Vikings is 0 and has no confidence interval; this is due to how the maths works in that it requires a reference point to calculate all the other values off from. The choice of the reference is completely arbitrary and in this case I chose Vikings because they are the last civisation alphabetically. This is to say that the performance scores you see in this graph represent the difference between that civilisations performance score of the  performance score of the Vikings (though please do not confuse this with thinking that these performance scores represent how the civilisations fare against the Vikings specifically!).
 
-A natural question is then "ok but what do these numbers actually mean?". The best way to interpret them is to plug them back into the formula mentioned above. As an example lets take the Berbers who have a value of $0.24$ and the Turks who have a value of $-0.13$. Plugging these values into the above formula (assuming no ELO difference between the two players) gives us:
+A natural question is then "ok but what do these numbers actually mean?". The best way to interpret them is to plug them back into the formula mentioned above. For example lets say civilisation A has a score of $0.24$ whilst civilisation B has a value of $-0.13$. Plugging these values into the above formula (assuming no ELO difference between the two players) gives us:
 $$
 \frac{1}{1+e^{-(0.24 - (-0.13))}} = \frac{1}{1+e^{-0.37}} = 0.591
 $$
 
-That is to say our model predicts that, with no difference in ELO between the two players, there is a 59.1% chance that the Berbers would beat the Turks in a 1v1 game on Arabia. The reference the following table provides a mapping from the difference in performance score to the expected win percentages:
+That is to say our model predicts that, with no difference in ELO between the two players, there is a 59.1% chance that civilisation A would beat civilisation B in a 1v1 game on Arabia for players with a mean ELO of ~ 1450. For reference the following table provides a mapping from the difference in performance score to the expected win percentages:
 
 | Difference in performance Score | Expected Win Percentage |
 |:---:|:---:|
@@ -58,7 +88,25 @@ That is to say our model predicts that, with no difference in ELO between the tw
 | -0.3 | 42.6%|
 | -0.4 | 40.1%|
 
-## Exploratory Results
+Note that an obvious limitation to this modeling approach is that it assume linearity in the performance scores, that is to say it assumes that if team A beat team B and team B beat team C then team A should also beat team C. Obviously it is clear this logic does not hold in AOE2 where team superiority is multifaceted. Regardless, the model still gives us a good estimate of the teams average performance and in theory a large part of the confidence intervals will represent the uncertainty of the teams performance due to the multidimensional nature of the game. 
+
+An alternative to civilisations is instead to focus on the civilisation classification to see if any particular class of civilisation is showing evidence of being dominant. Using the classes defined in game we get the following performance metrics:
+
+<img src="../outputs/g_iae12_bt_cc.png" width="75%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+Finally, we can use this same logic to explore the impact of the availability of specific units. 
+
+<img src="../outputs/g_iae12_bt_cu.png" width="75%" style="display: block; margin: auto;" />
+
+Please note that I was very close to not including this plot as I think it is extremely miss-leading. On review though I decided to include it anyway as I figured it provides a good example of why we shouldn't take model results at face value. For example the obvious interpretation here would be that Heavy Cavalry archers are an OP unit however if you dig a little deep its clear that's not what this means. Looking at the tech tree you will notice that most civilisations have access to Heavy Cavalry Archer with those who don't being the; Aztecs, Burgundians, Incas, Italians, Malay, Mayans, Portuguese, Sicilians & Teutons. Of these the Aztecs, Incas &  Mayans have access to Elite Eagle warriors with the remaining group mostly consisting of some of the weakest civilisations in the game. That is to say that this statistic isn't saying that Heavy Cavalry Archers are OP, instead it is saying that the civilisations that don't have access to Heavy Cavalry Archers are UP, a pedantic but very important distinction. 
+
+
+## Secondary Results
+
+<img src="../outputs/g_ia_slice.png" width="75%" style="display: block; margin: auto;" />
+<br/> <br/>
+<img src="../outputs/g_iae12_WR.png" width="75%" style="display: block; margin: auto;" />
 
 
 ## Frequently Asked Questions & Critiques
@@ -82,5 +130,6 @@ My second argument is that I don't think it is sensible to just balance the game
 This actually tends to be a non-issue due to the fact that games are balanced by their ELO rating which equates to their average in-game performance. Sure as a player plays more games with a specific civilisation they get good at using that civilisation and thus get better at using it. As a result their ELO rises until they are playing other players that can use their civilisations equally as well. The common argument is then that when the player who uses the same civilisation all the time uses a different civilisation they are super likely to lose and thus bias the results of the other civilisations. In reality though the fact that they only play a single civilisation all the time means that they contribute nearly no data for the other civilisations, and yes whilst this data might be biased, thus has no meaningful impact on the win rates of the other civilisations. 
 
 <br/><br/>
+
 
 

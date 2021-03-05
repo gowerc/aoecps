@@ -48,7 +48,6 @@ RUN Rscript -e "options(warn=2);\
         'rmarkdown',\
         'knitr',\
         'DT',\
-        'rstan',\
         'dbplyr',\
         'forcats',\
         'jsonlite'\

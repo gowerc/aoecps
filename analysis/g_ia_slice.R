@@ -75,8 +75,8 @@ p <- ggplot(data = res2, aes(ymin = plci, y = p, ymax = puci, x = y, group = civ
 ggsave(
     filename = "./outputs/g_ia_slice.png",
     plot = p,
-    height = 7,
-    width = 7
+    height = 6,
+    width = 9
 )
 
 

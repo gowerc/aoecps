@@ -13,6 +13,7 @@ outputs=\
 	outputs/g_ia_slice.png\
 	outputs/g_iae12_bt_civ.png\
 	outputs/g_iae12_bt_cc.png\
+	outputs/g_iae12_bt_cu.png \
 	outputs/g_iae12_ELODIST.png\
 	outputs/g_iae12_PR.png\
 	outputs/g_iae12_VERDIST.png\
@@ -44,6 +45,9 @@ outputs/g_iae12_bt_civ.png: analysis/g_iae12_bt_civ.R data/iae12.Rds
 	Rscript $<
 
 outputs/g_iae12_bt_cc.png: analysis/g_iae12_bt_cc.R data/iae12.Rds
+	Rscript $<
+
+outputs/g_iae12_bt_cu.png: analysis/g_iae12_bt_cu.R data/iae12.Rds
 	Rscript $<
 
 outputs/g_ia_slice.png: analysis/g_ia_slice.R data/iae12.Rds
