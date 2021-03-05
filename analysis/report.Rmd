@@ -32,7 +32,7 @@ nvalid <- nrow(dat)
 This document attempts to outline civilisation 1v1 performance metrics in order to
 try and identify areas of imbalance within the game. In particular, unless otherwise stated, the 
 analysis is based on 1v1 data from ranked matches played on Arabia where both players have an 
-ELO > 1200. 
+ELO > 1200 and are playing different civs (i.e. no mirror matches are included). 
 
 In total `r prettyNum(nmatches,big.mark=",",scientific=FALSE)` matches with a known result were recorded between
 `r as.Date(mindate)` and `r as.Date(maxdate)` of which `r prettyNum(nvalid,big.mark=",",scientific=FALSE)`

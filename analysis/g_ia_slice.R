@@ -18,33 +18,59 @@ dat2 <- bind_rows(
     mutate(elo = as.numeric(elo))
 
 
-get_slice <- function(y, dat, spread = 0.1){
+get_slice <- function(y, dat){
     ub <- exp(log(y) + 0.1)
     lb <- exp(log(y) - 0.1)
     
-    dat %>%
-        filter(elo >= lb, elo <= ub) %>%
+    dat2 <- dat %>%
+        filter(elo >= lb, elo <= ub) 
+        
+    tab <- dat2 %>%
+        summarise(nelo = n(), pelo = mean(won)) %>%
+        mutate(y = y) 
+    
+    gdat <- dat2 %>%
         group_by(civ) %>%
         summarise(n = n(), p = mean(won)) %>%
         ungroup() %>%
         mutate(plci = p - 1.96 * sqrt((p * (1 - p)) / n)) %>%
         mutate(puci = p + 1.96 * sqrt((p * (1 - p)) / n)) %>%
-        mutate(pr = (n / sum(n)) * 100) %>%
         mutate(y = y) %>%
-        mutate(limit_upper = ub, limit_lower = lb)
+        mutate(limit_upper = ub, limit_lower = lb) %>% 
+        left_join(tab, by = "y")
+    return(gdat)
 }
 
 cuts <- seq(
     from = signif(min(dat2$elo), 2),
     to = signif(max(dat2$elo), 2),
-    by = 20
+    by = 10
 )
 
 
-res <- map_df(cuts, get_slice, dat = dat2, spread = spread) 
+res <- map_df(cuts, get_slice, dat = dat2) 
 
 res2 <- res %>%
-    filter(limit_lower >= min(dat2$elo), limit_upper <= max(dat2$elo))
+    filter(limit_lower >= min(dat2$elo), limit_upper <= max(dat2$elo)) %>%
+    mutate(
+        p_adj = p - pelo,
+        plci_adj = plci - pelo,
+        puci_adj = puci - pelo
+    )
+    
+
+# res2 %>%
+#     select(
+#         elo = y, 
+#         n = nelo, 
+#         p = pelo, 
+#         elo_lower_limit = limit_lower,
+#         elo_upper_limit = limit_upper
+#     ) %>% 
+#     distinct() %>%
+#     filter(elo %in% seq(700, 2800, by = 100))
+    
+
 
 footnotes <- c(
     "Win rates are calculated at each point X after filtering the data to",
@@ -54,14 +80,14 @@ footnotes <- c(
     as_footnote()
 
 
-p <- ggplot(data = res2, aes(ymin = plci, y = p, ymax = puci, x = y, group = civ, col = civ, fill = civ)) +
+p <- ggplot(data = res2, aes(ymin = plci_adj, ymax = puci_adj, x = y, group = civ, col = civ, fill = civ)) +
     geom_ribbon() +
-    geom_hline(yintercept = 0.5, col = "red") +
+    geom_hline(yintercept = 0, col = "red") +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(4)) +
     scale_x_continuous(breaks = pretty_breaks(4)) +
-    ggtitle("Civilisation Win Rate by ELO") + 
-    ylab("Win Rate") +
+    ggtitle("Difference in Civilisation Win Rate from the Mean by ELO") + 
+    ylab("Win Rate Delta") +
     xlab("ELO") +
     facet_wrap(~civ) + 
     theme(

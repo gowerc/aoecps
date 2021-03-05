@@ -109,7 +109,7 @@ get_civunit <- function() {
 
 
 #' @export 
-as_footnote <- function(x, width = 110){
+as_footnote <- function(x, width = 130){
     x %>%
         paste(collapse = " ") %>%
         stringr::str_split("<br/>") %>%
@@ -118,3 +118,4 @@ as_footnote <- function(x, width = 110){
         stringr::str_wrap(width = width) %>%
         paste(collapse = "\n")
 }
+

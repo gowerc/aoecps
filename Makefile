@@ -1,13 +1,16 @@
 SHELL:=/bin/bash 
 
-.PHONY: all dbupdate
+.PHONY: all dbupdate clean
 
 all: dbupdate outputs/report.html
+
+clean:
+	rm data/*.Rds
 
 dbupdate:
 	./bin/rsql ./analysis/db_init.sql
 	Rscript ./analysis/db_game_meta.R
-	Rscript ./analysis/db_matches.R
+	Rscript ./analysis/db_matches.R 
 
 outputs=\
 	outputs/g_ia_slice.png\
