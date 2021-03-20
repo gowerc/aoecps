@@ -5,6 +5,7 @@ library(forcats)
 library(readr)
 library(ggplot2)
 library(scales)
+library(tidyr)
 
 
 adat <- readRDS("./data/iae12.Rds") %>%
@@ -13,22 +14,54 @@ adat <- readRDS("./data/iae12.Rds") %>%
 
 civunit <- get_civunit()
 
+civunit <- read_csv(file = "./data/raw/civunit2.csv")
 
-unit_levels <- civunit %>% 
-    select(-civ) %>% 
-    colnames()
+
+units <- civunit %>%
+    transmute(
+        civ = civ,
+        archer = archer > 3 | (archer == 3 & range_attack == 3  & archer_armor == 3),
+        skirmisher = skirmisher > 2,
+        cannoneer = cannoneer,
+        cavarcher = cavarcher > 2 | (cavarcher == 2 & range_attack == 3 & bloodlines == 1),
+        militia = militia > 5 | (militia == 5 & infantry_armor == 3 & melee_attack == 3),
+        spearman = spearman > 3 | (spearman == 3 & infantry_armor == 3 & melee_attack == 3),
+        knights = knights > 2,
+        eagles = eagles > 1, 
+        scouts = (horse_armor==3) & ((scouts == 2 & bloodlines == 1 ) | (scouts == 3)) ,
+        camels = camels >= 2,
+        elephants = elephants >= 2,
+        lancer = lancer >= 2,
+        ram = ram >= 3,
+        onager = (onager >= 3),
+        scorpion = scorpion > 2 | (scorpion == 2 & siege_engineers == 1),
+        bbc = bbc >= 1 ,
+        monk = (monk > 1) | (monk & redemption),
+        navel = navel, 
+        structures = structures,
+        eco_food = eco_food,
+        eco_wood = eco_wood,
+        eco_gold = eco_gold
+    ) 
+
+units %>% 
+    summarise(across(where(function(x) !is.character(x)), function(x) mean(x))) %>%
+    pivot_longer(everything()) %>% 
+    print(n=999)
+
+
 
 s1dat <- adat %>%
     select(rating = s1_rating, civ = s1_civ) %>%
     mutate(rating = rating / 25) %>% 
-    left_join(civunit, by = "civ") %>%
+    left_join(units, by = "civ") %>%
     mutate(across(where(is.logical), as.numeric)) %>% 
     select(-civ)
 
 s2dat <- adat %>%
     select(rating = s2_rating, civ = s2_civ) %>%
     mutate(rating = rating / 25) %>%
-    left_join(civunit, by = "civ") %>%
+    left_join(units, by = "civ") %>%
     mutate(across(where(is.logical), as.numeric)) %>% 
     select(-civ)
 
@@ -57,7 +90,7 @@ est <- coef(mod)
 se <- sqrt(diag(vcov(mod)))
 
 dat <- tibble(
-    name = c("ELO Delta (25)", unit_levels),
+    name = c("ELO Delta (25)", colnames(units)[-1]),
     est = est,
     se = se,
     lci = est - 1.96 * se,

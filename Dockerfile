@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     libv8-dev \
     vim \
     pandoc \
-    libxt-dev
+    libxt-dev\
+    libglpk-dev
 
 ## Install postgressql-cleint 13 (to communicate with db from the command line)
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
@@ -50,6 +51,7 @@ RUN Rscript -e "options(warn=2);\
         'DT',\
         'dbplyr',\
         'forcats',\
+        'HyRiM',\
         'jsonlite'\
     ))"
 

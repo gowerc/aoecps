@@ -30,9 +30,9 @@ while(timestamp < CUTOFF){
     
     message("Getting: ", as_datetime(timestamp))
     
-    data_parsed <- api_matches(count = 1000, since = timestamp) %>%
-        jsonlite::fromJSON() %>%
-        tibble() 
+    data_raw <- api_matches(count = 1000, since = timestamp)
+    
+    data_parsed <- parse_matches(data_raw)
 
     match_players <- data_parsed %>%
         select(match_id, players) %>%
