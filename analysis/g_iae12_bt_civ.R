@@ -63,7 +63,7 @@ performance_mid <- dat %>%
 
 footnotes <- c(
     "The Y-axis represents the difference in the performance",
-    "rating from the reference civilisation (Vikings).",
+    "rating from the reference civilisation (Vikings).<br/>",
     "The red line represents the mean performance rating across all",
     "civilisations."
 ) %>%
@@ -79,7 +79,6 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
         plot.caption = element_text(hjust = 0)
     ) +
     ylab("Performance Score Delta") +
-    ggtitle("Bradley-Terry Performance Scores By Civilisation") +
     xlab("") +
     scale_y_continuous(breaks = pretty_breaks(10)) +
     labs( caption = footnotes)

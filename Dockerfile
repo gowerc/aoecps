@@ -52,7 +52,9 @@ RUN Rscript -e "options(warn=2);\
         'dbplyr',\
         'forcats',\
         'HyRiM',\
-        'jsonlite'\
+        'ggdendro',\
+        'jsonlite',\
+        'kableExtra'\
     ))"
 
 RUN mkdir /app

@@ -91,7 +91,6 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
     ) +
     ylab("Performance Score Delta") +
     xlab("") +
-    ggtitle("Bradley-Terry Performance Scores By Civilisation Classifications") +
     scale_y_continuous(breaks = pretty_breaks(10)) +
     labs( caption = footnotes)
 

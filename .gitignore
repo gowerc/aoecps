@@ -7,3 +7,5 @@ data/*
 *.Rds
 *.rds
 *.RDS
+Rplots.pdf
+ouputs/*

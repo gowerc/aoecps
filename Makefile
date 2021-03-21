@@ -14,14 +14,18 @@ dbupdate:
 	Rscript ./analysis/db_matches.R 
 
 outputs=\
-	outputs/g_ia_slice.png\
+	data/g_ia_slice.Rds\
 	outputs/g_iae12_bt_civ.png\
 	outputs/g_iae12_bt_cc.png\
 	outputs/g_iae12_bt_cu.png \
 	outputs/g_iae12_ELODIST.png\
 	outputs/g_iae12_PR.png\
 	outputs/g_iae12_VERDIST.png\
-	outputs/g_iae12_WR.png
+	outputs/g_iae12_WR.png\
+	outputs/g_tae12_bt_civ.png\
+	outputs/g_iae12_cvc_clust.png\
+	data/g_iae12_cvc_opt.Rds\
+	data/g_iae12_cvc_civs.Rds
 
 
 outputs/report.html: analysis/report.Rmd $(outputs)
@@ -40,6 +44,8 @@ outputs/report.html: analysis/report.Rmd $(outputs)
 data/iae12.Rds: analysis/ad_iae12.R
 	Rscript $<
 
+data/tae12.Rds: analysis/ad_tae12.R
+	Rscript $<
 
 
 ###### Outputs
@@ -48,16 +54,32 @@ data/iae12.Rds: analysis/ad_iae12.R
 outputs/g_iae12_bt_civ.png: analysis/g_iae12_bt_civ.R data/iae12.Rds
 	Rscript $<
 
+outputs/g_tae12_bt_civ.png: analysis/g_tae12_bt_civ.R data/tae12.Rds
+	Rscript $<
+
 outputs/g_iae12_bt_cc.png: analysis/g_iae12_bt_cc.R data/iae12.Rds
 	Rscript $<
 
 outputs/g_iae12_bt_cu.png: analysis/g_iae12_bt_cu.R data/iae12.Rds
 	Rscript $<
 
-outputs/g_ia_slice.png: analysis/g_ia_slice.R data/iae12.Rds
+data/g_ia_slice.Rds: analysis/g_ia_slice.R data/iae12.Rds
 	Rscript $<
 
-# g_iae12 collection
+
+#### Civ v Civ collection
+data/g_iae12_cvc_civs.Rd: analysis/g_iae12_cvc.R data/iae12.Rds
+	Rscript $<
+
+data/g_iae12_cvc_opt.Rds: analysis/g_iae12_cvc.R data/iae12.Rds
+	Rscript $<
+
+outputs/g_iae12_cvc_clust.png: analysis/g_iae12_cvc.R data/iae12.Rds
+	Rscript $<
+
+
+
+#### g_iae12 collection
 outputs/g_iae12_ELODIST.png: analysis/g_iae12.R data/iae12.Rds
 	Rscript $<
 

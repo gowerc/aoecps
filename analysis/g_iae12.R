@@ -58,7 +58,6 @@ p <- ggplot(pdat, aes(x = elocat, y = n)) +
         hjust = 1,
         vjust = 1.1
     ) +
-    ggtitle("Summary of ELO Distribution") +
     geom_text(aes(y = y, label = p), hjust = 0.2, angle = 35)+ 
     theme(
         axis.text.x = element_text(hjust = 1, angle = 35),
@@ -82,8 +81,7 @@ p <- ggplot(data = dat, aes(x = oversion)) +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(8), expand = expansion(c(0, 0.05))) +
     xlab("Patch Version") +
-    ylab("Number of Games") +
-    ggtitle("Number of Matches per Patch")
+    ylab("Number of Games") 
 
 ggsave(
     plot = p,
@@ -115,7 +113,6 @@ p <- ggplot(data = sdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
     geom_hline(yintercept = 0.5, col = "red") +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(10)) +
-    ggtitle("Naive Win Rate By Civilisation") + 
     theme(
         axis.text.x = element_text(angle = 50, hjust = 1),
         plot.caption = element_text(hjust = 0)
@@ -147,8 +144,7 @@ p <- ggplot(data = sdat2, aes(y = pr, x = civ)) +
         plot.caption = element_text(hjust = 0)
     ) +
     ylab("Play Rate (%)") +
-    xlab("") +
-    ggtitle("Play Rate by Civilisation") 
+    xlab("") 
 
 
 ggsave(

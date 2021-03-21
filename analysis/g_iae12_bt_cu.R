@@ -37,7 +37,7 @@ units <- civunit %>%
         scorpion = scorpion > 2 | (scorpion == 2 & siege_engineers == 1),
         bbc = bbc >= 1 ,
         monk = (monk > 1) | (monk & redemption),
-        navel = navel, 
+        naval = naval, 
         structures = structures,
         eco_food = eco_food,
         eco_wood = eco_wood,
@@ -124,7 +124,6 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
         plot.caption = element_text(hjust = 0)
     ) +
     ylab("Performance Score Delta") +
-    ggtitle("Bradley-Terry Performance Scores By Unit") +
     xlab("") +
     scale_y_continuous(breaks = pretty_breaks(10)) +
     labs( caption = footnotes)

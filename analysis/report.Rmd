@@ -5,7 +5,7 @@ output:
     html_document:
         theme: cerulean
         toc: true
-        toc_depth: 2
+        toc_depth: 3
 ---
 
 <style>
@@ -18,7 +18,10 @@ h1,h2,h3,h4 {
 ```{r, echo=FALSE, results=FALSE, message=FALSE}
 pkgload::load_all()
 library(dbplyr)
+library(dplyr)
+library(ggplot2)
 library(lubridate)
+library(kableExtra)
 con <- get_connection()
 nmatches <- tbl(con, "match_meta") %>% tally() %>% collect() %>% pull(n) %>% as.integer()
 maxdate <- tbl(con, "match_meta") %>% summarise(s = max(started, na.rm = TRUE)) %>% collect() %>% pull(s) %>% as_datetime()
@@ -40,12 +43,17 @@ met the above mentioned criteria and were included into the analysis.  Data is s
 
 ## Descriptives
 
+### Summary of ELO Distribution
 
 <img src="../outputs/g_iae12_ELODIST.png" width="75%" style="display: block; margin: auto;" />
 <br/> <br/>
 
+### Play Rate by Civilisation
+
 <img src="../outputs/g_iae12_PR.png" width="75%" style="display: block; margin: auto;" />
 <br/> <br/>
+
+### Number of Matches per Patch
 
 <img src="../outputs/g_iae12_VERDIST.png" width="75%" style="display: block; margin: auto;" />
 
@@ -62,52 +70,116 @@ Where:
 
 Fitting this model to the available data results in the following performance score estimates:
 
+### Bradley-Terry Performance Scores By Civilisation 
 
 <img src="../outputs/g_iae12_bt_civ.png" width="75%" style="display: block; margin: auto;" />
 
 Each point represents the estimated performance score for the corresponding civilisation whilst the interval around the point represents the 95% confidence interval, which can be naively thought of to mean that there is a 95% chance that the true value lies somewhere within this interval. The ELO Delta (25) point acts as a reference to show us the relative increase in performance score based upon a 25 point ELO difference between players. Clearly the impact of ELO massively outweighs the impact of civilisation choice. 
 
-You may also notice that the performance score for Vikings is 0 and has no confidence interval; this is due to how the maths works in that it requires a reference point to calculate all the other values off from. The choice of the reference is completely arbitrary and in this case I chose Vikings because they are the last civisation alphabetically. This is to say that the performance scores you see in this graph represent the difference between that civilisations performance score of the  performance score of the Vikings (though please do not confuse this with thinking that these performance scores represent how the civilisations fare against the Vikings specifically!).
+You may also notice that the performance score for Vikings is 0 and has no confidence interval; this is due to how the maths works in that it requires a reference point to calculate all the other values off from. The choice of the reference is completely arbitrary and in this case I chose Vikings because they are the last civisation alphabetically. This is to say that the performance scores you see in this graph represents the difference between that civilisation's performance score and the  performance score of the Vikings.
 
-A natural question is then "ok but what do these numbers actually mean?". The best way to interpret them is to plug them back into the formula mentioned above. For example lets say civilisation A has a score of $0.24$ whilst civilisation B has a value of $-0.13$. Plugging these values into the above formula (assuming no ELO difference between the two players) gives us:
+A natural question is then "ok but what do these numbers actually mean?". The best way to interpret them is to plug them back into the formula mentioned above. For example lets say civilisation A has a score of $0.24$ whilst civilisation B has a value of $-0.13$  . Plugging these values into the above formula (assuming no ELO difference between the two players) gives us:
 $$
 \frac{1}{1+e^{-(0.24 - (-0.13))}} = \frac{1}{1+e^{-0.37}} = 0.591
 $$
 
 That is to say our model predicts that, with no difference in ELO between the two players, there is a 59.1% chance that civilisation A would beat civilisation B in a 1v1 game on Arabia for players with a mean ELO of ~ 1450. For reference the following table provides a mapping from the difference in performance score to the expected win percentages:
 
-| Difference in performance Score | Expected Win Percentage |
-|:---:|:---:|
-| 0.4 | 59.9%|
-| 0.3 | 57.4%|
-| 0.2 | 55.0%|
-| 0.1 |  52.5%|
-| 0.0 | 50.0%|
-| -0.1 | 47.5%|
-| -0.2 | 45.0%|
-| -0.3 | 42.6%|
-| -0.4 | 40.1%|
+```{r, results="asis", echo=FALSE}
+logistic <- function(x)  1 / (1 + exp(-x))
+dat <- tibble(
+    x = seq(0.5, -0.5, by = -0.1),
+    y = paste0(round(logistic(x) * 100, 2), "%")
+) %>%
+    select(
+        `Difference in Performance Score` = x,
+        `Expected Win Percentage` = y
+    )
+
+
+kable(dat, align = "cc", "html") %>%
+    kable_styling(full_width = F)
+
+```
+
 
 Note that an obvious limitation to this modeling approach is that it assumes linearity in the performance scores, that is to say it assumes that if team A beats team B and team B beats team C then team A should also beat team C. Obviously it is clear this logic does not hold in AOE2 where team superiority is multifaceted. Regardless, the model still gives us a good estimate of the teams average performance. 
 
 An alternative to modeling the civilisations performance is instead to focus on the civilisation classification to see if any particular class of civilisation is showing evidence of being dominant. Using the classes defined in game we get the following performance metrics:
+
+### Bradley-Terry Performance Scores By Civilisation Classifications
 
 <img src="../outputs/g_iae12_bt_cc.png" width="75%" style="display: block; margin: auto;" />
 <br/> <br/>
 
 Finally, we can use this same logic to explore the impact of the availability of specific units. 
 
+### Bradley-Terry Performance Scores By Unit
+
 <img src="../outputs/g_iae12_bt_cu.png" width="75%" style="display: block; margin: auto;" />
 
 Please note that I was very close to not including this plot as I think it is extremely miss-leading. On review though I decided to include it anyway as I figured it provides a good example of why we shouldn't take model results at face value. For example the obvious interpretation here would be that Heavy Cavalry archers are an OP unit however if you dig a little deep its clear that's not what this means. Looking at the tech tree you will notice that most civilisations have access to Heavy Cavalry Archer with those who don't being the; Aztecs, Burgundians, Incas, Italians, Malay, Mayans, Portuguese, Sicilians & Teutons. Of these the Aztecs, Incas &  Mayans have access to Elite Eagle warriors with the remaining group mostly consisting of some of the weakest civilisations in the game. That is to say that this statistic isn't saying that Heavy Cavalry Archers are OP, instead it is saying that the civilisations that don't have access to Heavy Cavalry Archers are UP, a pedantic but very important distinction. 
 
 
+### Bradley-Terry Performance Scores By Civilisation (Team Games)
+
+<img src="../outputs/g_tae12_bt_civ.png" width="75%" style="display: block; margin: auto;" />
+
 ## Secondary Results
 
-<img src="../outputs/g_ia_slice.png" width="75%" style="display: block; margin: auto;" />
+### Difference in Civilisation Win Rate from the Mean by ELO {.tabset .tabset-fade .tabset-pills}
+
+
+```{r, echo = FALSE, results = "asis"}
+cl <- readRDS("./data/g_ia_slice.Rds")
+for ( i in names(cl)){
+    cat("  \n  \n")
+    cat("#### ", i)
+    cat("  \n  \n")
+    print(cl[[i]])
+}
+
+```
+
 <br/> <br/>
+
+### Naive Win Rate By Civilisation
+
 <img src="../outputs/g_iae12_WR.png" width="75%" style="display: block; margin: auto;" />
 
+
+## Civilisation vs Civilisation Results
+
+### Hierarchical Clustering Dendrogram
+
+<img src="../outputs/g_iae12_cvc_clust.png" width="75%" style="display: block; margin: auto;" />
+<br/><br/>
+
+### Individual Civilisation Plots {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE, results = "asis"}
+cl <- readRDS("./data/g_iae12_cvc_civs.Rds")
+for ( i in names(cl)){
+    cat("  \n  \n")
+    cat("#### ", i)
+    cat("  \n  \n")
+    print(cl[[i]])
+}
+
+```
+
+### Optimal Civilisation Selection
+
+```{r, echo = FALSE, results = "asis"}
+odat <- readRDS("./data/g_iae12_cvc_opt.Rds") %>%
+    filter(p != 0) %>%
+    mutate(p = paste(round(p * 100,2), "%")) %>%
+    select(Civilisation = names, `Selection Rate` = p) 
+
+kable(odat, align = "cr", "html") %>%
+    kable_styling(full_width = F)
+
+```
 
 ## Frequently Asked Questions & Critiques
 
