@@ -54,7 +54,8 @@ RUN Rscript -e "options(warn=2);\
         'HyRiM',\
         'ggdendro',\
         'jsonlite',\
-        'kableExtra'\
+        'kableExtra',\
+        'ggrepel'\
     ))"
 
 RUN mkdir /app

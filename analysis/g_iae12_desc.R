@@ -5,11 +5,20 @@ library(scales)
 library(stringr)
 library(forcats)
 library(tidyr)
-
+library(ggrepel)
 
 dat <- readRDS("./data/iae12.Rds") %>%
-    filter(ANLFL) %>% 
-    mutate(elo = (s1_rating + s2_rating)/ 2)
+    filter(ANLFL) %>%
+    mutate(elo = (s1_rating + s2_rating) / 2)
+
+
+
+
+#######################################
+#
+# Hist plot of ELo counts
+#
+#######################################
 
 
 cuts <- seq(min(dat$elo), max(dat$elo) + 100, by = 100)
@@ -69,10 +78,19 @@ p <- ggplot(pdat, aes(x = elocat, y = n)) +
 
 ggsave(
     plot = p,
-    filename = "./outputs/g_iae12_ELODIST.png",
+    filename = "./outputs/g_iae12_desc_ELODIST.png",
     height = 6,
     width = 9
 )
+
+
+
+
+#######################################
+#
+# Hist plot of Patch version
+#
+#######################################
 
 
 
@@ -85,17 +103,27 @@ p <- ggplot(data = dat, aes(x = oversion)) +
 
 ggsave(
     plot = p,
-    filename = "./outputs/g_iae12_VERDIST.png",
+    filename = "./outputs/g_iae12_desc_VERDIST.png",
     height = 6,
     width = 9
 )
+
+
+
+
+#######################################
+#
+# Naive Win rates
+#
+#######################################
+
 
 dat2 <- bind_rows(
     dat %>% select(civ = s1_civ, won = s1_won, elo = s1_rating), 
     dat %>% select(civ = s2_civ, won = s2_won, elo = s2_rating)
 )
 
-sdat <- dat2 %>%
+wrdat <- dat2 %>%
     group_by(civ) %>%
     summarise(n = n(), p = mean(won)) %>%
     ungroup() %>%
@@ -103,11 +131,11 @@ sdat <- dat2 %>%
     mutate(puci = p + 1.96 * sqrt((p * (1 - p)) / n)) %>% 
     mutate(pr = (n / sum(n)) * 100)
 
-sdat2 <- sdat %>%
+wrdat2 <- wrdat %>%
     arrange(desc(p)) %>%
     mutate(civ = fct_inorder(civ))
 
-p <- ggplot(data = sdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
+p <- ggplot(data = wrdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
     geom_point() +
     geom_errorbar() +
     geom_hline(yintercept = 0.5, col = "red") +
@@ -123,20 +151,26 @@ p <- ggplot(data = sdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
 
 ggsave(
     plot = p,
-    filename = "./outputs/g_iae12_WR.png",
+    filename = "./outputs/g_iae12_desc_WR.png",
     height = 6,
     width = 9
 )
 
 
+#######################################
+#
+# Play Rates
+#
+#######################################
 
-sdat2 <- sdat %>%
+
+prdat <- wrdat %>%
     arrange(desc(n)) %>%
     mutate(civ = fct_inorder(civ)) 
 
-p <- ggplot(data = sdat2, aes(y = pr, x = civ)) +
+p <- ggplot(data = prdat, aes(y = pr, x = civ)) +
     geom_bar(stat = "identity") +
-    geom_hline(yintercept = 1 / nrow(sdat2) * 100, col = "red") +
+    geom_hline(yintercept = 1 / nrow(prdat) * 100, col = "red") +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
     theme(
@@ -149,8 +183,39 @@ p <- ggplot(data = sdat2, aes(y = pr, x = civ)) +
 
 ggsave(
     plot = p,
-    filename = "./outputs/g_iae12_PR.png",
+    filename = "./outputs/g_iae12_desc_PR.png",
     height = 6,
     width = 9
 )
+
+
+
+
+#######################################
+#
+# Play Rates vs Win Rates
+#
+#######################################
+
+prwrdat <- wrdat %>%
+    mutate(pstr = round(p * 100,2))
+
+p <- ggplot(prwrdat, aes(x = pstr, y = pr, label = civ)) +
+    geom_point() +
+    geom_text_repel(min.segment.length = unit(0.1, "lines")) +
+    theme_bw() +
+    xlab("Win Rate (%)") +
+    ylab("Play Rate (%)") +
+    geom_vline(xintercept = 50, alpha = 0.6, col = "red") + 
+    geom_hline(yintercept = 1 / nrow(prwrdat) * 100, alpha = 0.6, col = "red") + 
+    scale_x_continuous(breaks = pretty_breaks(10)) +
+    scale_y_continuous(breaks = pretty_breaks(10)) 
+
+ggsave(
+    plot = p,
+    filename = "./outputs/g_iae12_desc_WRPR.png",
+    height = 6,
+    width = 9
+)
+
 

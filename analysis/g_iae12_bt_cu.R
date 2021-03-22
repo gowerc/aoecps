@@ -14,7 +14,7 @@ adat <- readRDS("./data/iae12.Rds") %>%
 
 civunit <- get_civunit()
 
-civunit <- read_csv(file = "./data/raw/civunit2.csv")
+civunit <- read_csv(file = "./data-raw/civunit2.csv")
 
 
 units <- civunit %>%

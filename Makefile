@@ -6,7 +6,8 @@ SHELL:=/bin/bash
 all: dbupdate outputs/report.html
 
 clean:
-	rm data/*.Rds
+	rm -f data/*
+	rm -f outputs/*
 
 dbupdate:
 	./bin/rsql ./analysis/db_init.sql
@@ -14,18 +15,20 @@ dbupdate:
 	Rscript ./analysis/db_matches.R 
 
 outputs=\
-	data/g_ia_slice.Rds\
+	outputs/g_ia_slice.Rds\
+	outputs/g_tae12_bt_civ.png\
 	outputs/g_iae12_bt_civ.png\
 	outputs/g_iae12_bt_cc.png\
 	outputs/g_iae12_bt_cu.png \
-	outputs/g_iae12_ELODIST.png\
-	outputs/g_iae12_PR.png\
-	outputs/g_iae12_VERDIST.png\
-	outputs/g_iae12_WR.png\
-	outputs/g_tae12_bt_civ.png\
+	outputs/g_iae12_desc_ELODIST.png\
+	outputs/g_iae12_desc_PR.png\
+	outputs/g_iae12_desc_VERDIST.png\
+	outputs/g_iae12_desc_WR.png\
+	outputs/g_iae12_desc_WRPR.png\
 	outputs/g_iae12_cvc_clust.png\
-	data/g_iae12_cvc_opt.Rds\
-	data/g_iae12_cvc_civs.Rds
+	outputs/t_iae12_cvc_opt.Rds\
+	outputs/g_iae12_cvc_civs.Rds
+	
 
 
 outputs/report.html: analysis/report.Rmd $(outputs)
@@ -63,15 +66,15 @@ outputs/g_iae12_bt_cc.png: analysis/g_iae12_bt_cc.R data/iae12.Rds
 outputs/g_iae12_bt_cu.png: analysis/g_iae12_bt_cu.R data/iae12.Rds
 	Rscript $<
 
-data/g_ia_slice.Rds: analysis/g_ia_slice.R data/iae12.Rds
+outputs/g_ia_slice.Rds: analysis/g_ia_slice.R data/iae12.Rds
 	Rscript $<
 
 
 #### Civ v Civ collection
-data/g_iae12_cvc_civs.Rd: analysis/g_iae12_cvc.R data/iae12.Rds
+outputs/g_iae12_cvc_civs.Rd: analysis/g_iae12_cvc.R data/iae12.Rds
 	Rscript $<
 
-data/g_iae12_cvc_opt.Rds: analysis/g_iae12_cvc.R data/iae12.Rds
+outputs/t_iae12_cvc_opt.Rds: analysis/g_iae12_cvc.R data/iae12.Rds
 	Rscript $<
 
 outputs/g_iae12_cvc_clust.png: analysis/g_iae12_cvc.R data/iae12.Rds
@@ -80,14 +83,17 @@ outputs/g_iae12_cvc_clust.png: analysis/g_iae12_cvc.R data/iae12.Rds
 
 
 #### g_iae12 collection
-outputs/g_iae12_ELODIST.png: analysis/g_iae12.R data/iae12.Rds
+outputs/g_iae12_desc_ELODIST.png: analysis/g_iae12_desc.R data/iae12.Rds
 	Rscript $<
 
-outputs/g_iae12_PR.png: analysis/g_iae12.R data/iae12.Rds
+outputs/g_iae12_desc_PR.png: analysis/g_iae12_desc.R data/iae12.Rds
 	Rscript $<
 
-outputs/g_iae12_VERDIST.png: analysis/g_iae12.R data/iae12.Rds
+outputs/g_iae12_desc_VERDIST.png: analysis/g_iae12_desc.R data/iae12.Rds
 	Rscript $<
 	
-outputs/g_iae12_WR.png: analysis/g_iae12.R data/iae12.Rds
+outputs/g_iae12_desc_WR.png: analysis/g_iae12_desc.R data/iae12.Rds
+	Rscript $<
+
+outputs/g_iae12_desc_WRPR.png: analysis/g_iae12_desc.R data/iae12.Rds
 	Rscript $<

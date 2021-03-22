@@ -125,7 +125,7 @@ slice_plots <- map(civlist, get_slice_plot, res2)
 names(slice_plots) <- civlist
 
 saveRDS(
-    file = "./data/g_ia_slice.Rds",
+    file = "./outputs/g_ia_slice.Rds",
     object = slice_plots
 )
 

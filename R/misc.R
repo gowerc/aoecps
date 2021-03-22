@@ -57,7 +57,7 @@ invlogit <- function(x){
 #' @import readr
 get_civclass <- function() {
     civclass <- read_csv(
-        file = "./data/raw/civclass.csv",
+        file = "./data-raw/civclass.csv",
         col_types = readr::cols(
             civ = readr::col_character(),
             infantry = readr::col_character(),
@@ -82,7 +82,7 @@ get_civclass <- function() {
 #' @import readr
 get_civunit <- function() {
     civunit <- read_csv(
-        file = "./data/raw/civunit.csv",
+        file = "./data-raw/civunit.csv",
         col_types = cols(
             civ = col_character(),
             Arbalester = col_character(),

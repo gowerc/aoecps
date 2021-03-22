@@ -120,7 +120,7 @@ names(civplots) <- civlist
 
 saveRDS(
     civplots,
-    file = "./data/g_iae12_cvc_civs.Rds"
+    file = "./outputs/g_iae12_cvc_civs.Rds"
 )
 
 
@@ -256,7 +256,7 @@ OW <- tibble(
 
 saveRDS(
     OW, 
-    file = "./data/g_iae12_cvc_opt.Rds"
+    file = "./outputs/t_iae12_cvc_opt.Rds"
 )
 
 OW %>%

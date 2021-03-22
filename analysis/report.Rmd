@@ -6,14 +6,10 @@ output:
         theme: cerulean
         toc: true
         toc_depth: 3
+        css: [www/jquery-ui.css, www/jquery-ui.structure.css, www/styles.css, www/jquery-ui.theme.css]
+        includes:
+            in_header: www/header.html
 ---
-
-<style>
-h1,h2,h3,h4 {
-    padding-top: 20px;
-    padding-bottom:10px;
-}
-</style>
 
 ```{r, echo=FALSE, results=FALSE, message=FALSE}
 pkgload::load_all()
@@ -45,17 +41,17 @@ met the above mentioned criteria and were included into the analysis.  Data is s
 
 ### Summary of ELO Distribution
 
-<img src="../outputs/g_iae12_ELODIST.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_ELODIST.png" width="75%" style="display: block; margin: auto;" />
 <br/> <br/>
 
 ### Play Rate by Civilisation
 
-<img src="../outputs/g_iae12_PR.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_PR.png" width="75%" style="display: block; margin: auto;" />
 <br/> <br/>
 
 ### Number of Matches per Patch
 
-<img src="../outputs/g_iae12_VERDIST.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_VERDIST.png" width="75%" style="display: block; margin: auto;" />
 
 
 ## Primary Results
@@ -127,25 +123,31 @@ Please note that I was very close to not including this plot as I think it is ex
 
 ## Secondary Results
 
-### Difference in Civilisation Win Rate from the Mean by ELO {.tabset .tabset-fade .tabset-pills}
-
+### Difference in Civilisation Win Rate from the Mean by ELO 
 
 ```{r, echo = FALSE, results = "asis"}
-cl <- readRDS("./data/g_ia_slice.Rds")
-for ( i in names(cl)){
-    cat("  \n  \n")
-    cat("#### ", i)
-    cat("  \n  \n")
-    print(cl[[i]])
+cl <- readRDS("./outputs/g_ia_slice.Rds")
+id <- "cvcwr"
+cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
+cat(glue::glue('<input id="{id}">'))
+for ( civ in names(cl)){
+    display <- if_else(civ == "Aztecs", "true", "none")
+    cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
+    print(cl[[civ]])
+    cat("</div>")
 }
-
 ```
 
 <br/> <br/>
 
 ### Naive Win Rate By Civilisation
 
-<img src="../outputs/g_iae12_WR.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_WR.png" width="75%" style="display: block; margin: auto;" />
+
+### Civilisation Play rate vs Naive Win Rate
+
+<img src="../outputs/g_iae12_desc_WRPR.png" width="75%" style="display: block; margin: auto;" />
+
 
 
 ## Civilisation vs Civilisation Results
@@ -157,21 +159,25 @@ for ( i in names(cl)){
 
 ### Individual Civilisation Plots {.tabset .tabset-fade .tabset-pills}
 
-```{r, echo = FALSE, results = "asis"}
-cl <- readRDS("./data/g_iae12_cvc_civs.Rds")
-for ( i in names(cl)){
-    cat("  \n  \n")
-    cat("#### ", i)
-    cat("  \n  \n")
-    print(cl[[i]])
-}
 
+```{r, echo = FALSE, results = "asis"}
+cl <- readRDS("./outputs/g_iae12_cvc_civs.Rds")
+id <- "cvcip"
+cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
+cat(glue::glue('<input id="{id}">'))
+for ( civ in names(cl)){
+    display <- if_else(civ == "Aztecs", "true", "none")
+    cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
+    print(cl[[civ]])
+    cat("</div>")
+}
 ```
+
 
 ### Optimal Civilisation Selection
 
 ```{r, echo = FALSE, results = "asis"}
-odat <- readRDS("./data/g_iae12_cvc_opt.Rds") %>%
+odat <- readRDS("./outputs/t_iae12_cvc_opt.Rds") %>%
     filter(p != 0) %>%
     mutate(p = paste(round(p * 100,2), "%")) %>%
     select(Civilisation = names, `Selection Rate` = p) 
