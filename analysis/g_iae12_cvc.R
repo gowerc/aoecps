@@ -148,6 +148,8 @@ ldata <- ddata %>%
     filter(yend == 0) %>% 
     mutate(labs = hmod$labels[hmod$order])
 
+plot(hmod)
+
 
 
 recur_get_group <- function(start, start_is_y, dat, grpdat = NULL){
@@ -156,12 +158,14 @@ recur_get_group <- function(start, start_is_y, dat, grpdat = NULL){
     if(start_is_y){
         next_start <- dat %>%
             filter(x != xend) %>%
-            left_join(select(start, yend, grp), by = "yend") %>%
+            left_join( select(start, yend, grp, yx = x), by = "yend") %>%
+            filter( x == yx | xend == yx) %>% 
             filter(!is.na(grp))
     } else {
         next_start <- dat %>%
             filter(y != yend) %>%
-            left_join(select(start, xend, grp), by = "xend") %>%
+            left_join(select(start, xend, grp, xy=y), by = "xend") %>%
+            filter( y == xy | yend == xy) %>% 
             filter(!is.na(grp))
     }
     if (nrow(next_start) == 0) {
@@ -225,11 +229,9 @@ p <- ggplot(ddata3, aes(x = x, y = y, xend = xend, yend = nyend, col = grp)) +
     ) +
     labs(caption = footnotes)
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_cvc_clust.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_cvc_clust.png"
 )
 
 ###################################

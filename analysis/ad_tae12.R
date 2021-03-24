@@ -48,7 +48,7 @@ dat2 <- dat %>%
 elo_allow <- dat2 %>%
     group_by(match_id) %>%
     summarise(m = mean(rating)) %>%
-    filter(!is.na(m) & m >= 1400)
+    filter(!is.na(m) & m >= 1500)
 
 dat3 <- dat2 %>%
     mutate(ANLFL = match_id %in% elo_allow$match_id)
@@ -58,6 +58,17 @@ saveRDS(
     file = "./data/tae12.Rds"
 )
 
+
+team_meta <- list(
+    n_db = as.numeric(tbl(con, "match_meta") %>% tally() %>% pull(n)),
+    n_team = as.numeric(tbl(con, "match_meta") %>% filter(leaderboard_id == 4, ranked) %>% tally() %>% pull(n)),
+    n_valid_team = dat3 %>% filter(ANLFL) %>% distinct(match_id) %>% nrow()
+)
+
+saveRDS(
+    object = team_meta, 
+    file = "./data/tae12_meta.Rds"
+)
 
 
 

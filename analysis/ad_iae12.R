@@ -7,6 +7,7 @@ library(DBI)
 library(tidyr)
 library(stringr)
 library(assertthat)
+library(lubridate)
 library(forcats)
 
 con <- get_connection()
@@ -93,4 +94,27 @@ adat2 <- adat %>%
 saveRDS(
     object = adat2,
     file = "./data/iae12.Rds"
+)
+
+max_date <- tbl(con, "match_meta") %>% 
+    summarise(m = max(started, na.rm = TRUE)) %>% 
+    pull(m) %>% 
+    as_datetime()
+
+min_date <- tbl(con, "match_meta") %>% 
+    summarise(m = min(started, na.rm = TRUE)) %>% 
+    pull(m) %>% 
+    as_datetime()
+    
+solo_meta <- list(
+    db_min = min_date,
+    db_max = max_date,
+    n_db = as.numeric(tbl(con, "match_meta") %>% tally() %>% pull(n)),
+    n_solo = as.numeric(tbl(con, "match_meta") %>% filter(leaderboard_id == 3, ranked) %>% tally() %>% pull(n)),
+    n_valid_solo = adat2 %>% filter(ANLFL) %>% distinct(match_id) %>% nrow()
+)
+
+saveRDS(
+    object = solo_meta, 
+    file = "./data/iae12_meta.Rds"
 )

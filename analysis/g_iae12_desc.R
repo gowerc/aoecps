@@ -76,11 +76,9 @@ p <- ggplot(pdat, aes(x = elocat, y = n)) +
 
 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_ELODIST.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_desc_ELODIST.png"
 )
 
 
@@ -101,11 +99,9 @@ p <- ggplot(data = dat, aes(x = oversion)) +
     xlab("Patch Version") +
     ylab("Number of Games") 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_VERDIST.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_desc_VERDIST.png"
 )
 
 
@@ -149,11 +145,9 @@ p <- ggplot(data = wrdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
     xlab("")
 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_WR.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_desc_WR.png"
 )
 
 
@@ -181,11 +175,9 @@ p <- ggplot(data = prdat, aes(y = pr, x = civ)) +
     xlab("") 
 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_PR.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_desc_PR.png"
 )
 
 
@@ -202,7 +194,7 @@ prwrdat <- wrdat %>%
 
 p <- ggplot(prwrdat, aes(x = pstr, y = pr, label = civ)) +
     geom_point() +
-    geom_text_repel(min.segment.length = unit(0.1, "lines")) +
+    geom_text_repel(min.segment.length = unit(0.1, "lines"), alpha = 0.7) +
     theme_bw() +
     xlab("Win Rate (%)") +
     ylab("Play Rate (%)") +
@@ -211,11 +203,9 @@ p <- ggplot(prwrdat, aes(x = pstr, y = pr, label = civ)) +
     scale_x_continuous(breaks = pretty_breaks(10)) +
     scale_y_continuous(breaks = pretty_breaks(10)) 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_WRPR.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_desc_WRPR.png"
 )
 
 

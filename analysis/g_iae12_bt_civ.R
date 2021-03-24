@@ -54,6 +54,12 @@ dat <- tibble(
     arrange(desc(est)) %>%
     mutate(name = fct_inorder(name))
 
+saveRDS(
+    object = dat, 
+    file = "data/iae12_bt_civ.Rds"
+)
+
+
 
 performance_mid <- dat %>%
     filter(name != "ELO Delta (25)") %>%
@@ -62,10 +68,8 @@ performance_mid <- dat %>%
 
 
 footnotes <- c(
-    "The Y-axis represents the difference in the performance",
-    "rating from the reference civilisation (Vikings).<br/>",
-    "The red line represents the mean performance rating across all",
-    "civilisations."
+    "Performance scores represent the relative difference from the reference civilisation (Vikings).<br/>",
+    "The red line represents the median performance score across all civilisations."
 ) %>%
     as_footnote()
 
@@ -78,16 +82,15 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
         axis.text.x = element_text(angle = 50, hjust = 1),
         plot.caption = element_text(hjust = 0)
     ) +
+    labs( caption = footnotes) + 
     ylab("Performance Score Delta") +
     xlab("") +
-    scale_y_continuous(breaks = pretty_breaks(10)) +
-    labs( caption = footnotes)
+    scale_y_continuous(breaks = pretty_breaks(10))
+    
 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_bt_civ.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_bt_civ.png"
 )
 

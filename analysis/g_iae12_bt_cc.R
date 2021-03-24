@@ -73,10 +73,8 @@ performance_mid <- dat %>%
 
 
 footnotes <- c(
-    "The Y-axis represents the difference in the performance",
-    "score from the a hypotherical civilisation with no specalisations<br/>",
-    "The red line represents the mean performance rating across all",
-    "civilisation classifications"
+    "Performance scores represent the relative difference from the reference civilisation (Vikings).<br/>",
+    "The red line represents the median performance score across all civilisations."
 ) %>%
     as_footnote()
 
@@ -95,10 +93,8 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
     labs( caption = footnotes)
 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_bt_cc.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_iae12_bt_cc.png"
 )
 

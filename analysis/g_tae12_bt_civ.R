@@ -88,6 +88,11 @@ dat <- tibble(
     arrange(desc(est)) %>%
     mutate(name = fct_inorder(name))
 
+saveRDS(
+    object = dat, 
+    file = "data/tae12_bt_civ.Rds"
+)
+
 
 
 performance_mid <- dat %>%
@@ -97,10 +102,8 @@ performance_mid <- dat %>%
 
 
 footnotes <- c(
-    "The Y-axis represents the difference in the performance",
-    "rating from the reference civilisation (Vikings).<br/>",
-    "The red line represents the mean performance rating across all",
-    "civilisations."
+    "Performance scores represent the relative difference from the reference civilisation (Vikings).<br/>",
+    "The red line represents the median performance score across all civilisations."
 ) %>%
     as_footnote()
 
@@ -119,9 +122,7 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
     labs( caption = footnotes)
 
 
-ggsave(
+save_plot(
     plot = p,
-    filename = "./outputs/g_tae12_bt_civ.png",
-    height = 6,
-    width = 9
+    filename = "./outputs/g_tae12_bt_civ.png"
 )

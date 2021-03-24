@@ -2,12 +2,19 @@
 
 #' @export 
 version_map <- function(x){
-    case_when(
+    x2 <- case_when(
         x == "45185" ~ "45340",
         x == "44834" ~ "45340",
         x == "45340" ~ "45340",
-        TRUE ~ x
+        is.na(x) ~ "UNKNOWN",
+        TRUE ~ "UNMAPPED"
     )
+    assert_that(
+        all(x2 != "UNMAPPED")
+    )
+    
+    x2[x2 == "UNKNOWN"] <- NA_character_
+    return(x2)
 }
 
 
@@ -109,7 +116,7 @@ get_civunit <- function() {
 
 
 #' @export 
-as_footnote <- function(x, width = 130){
+as_footnote <- function(x, width = 140){
     x %>%
         paste(collapse = " ") %>%
         stringr::str_split("<br/>") %>%
@@ -117,5 +124,17 @@ as_footnote <- function(x, width = 130){
         stringr::str_trim() %>% 
         stringr::str_wrap(width = width) %>%
         paste(collapse = "\n")
+}
+
+
+#' @export 
+save_plot <- function(plot, filename, height = 5.5 , width = 8, ...){
+    ggsave(    
+        plot = plot,
+        filename = filename,
+        height = height,
+        width = width,
+        ...
+    )
 }
 

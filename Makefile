@@ -20,6 +20,7 @@ outputs=\
 	outputs/g_iae12_bt_civ.png\
 	outputs/g_iae12_bt_cc.png\
 	outputs/g_iae12_bt_cu.png \
+	outputs/g_ae12_bt_civ.png\
 	outputs/g_iae12_desc_ELODIST.png\
 	outputs/g_iae12_desc_PR.png\
 	outputs/g_iae12_desc_VERDIST.png\
@@ -28,6 +29,7 @@ outputs=\
 	outputs/g_iae12_cvc_clust.png\
 	outputs/t_iae12_cvc_opt.Rds\
 	outputs/g_iae12_cvc_civs.Rds
+	
 	
 
 
@@ -64,6 +66,9 @@ outputs/g_iae12_bt_cc.png: analysis/g_iae12_bt_cc.R data/iae12.Rds
 	Rscript $<
 
 outputs/g_iae12_bt_cu.png: analysis/g_iae12_bt_cu.R data/iae12.Rds
+	Rscript $<
+
+outputs/g_ae12_bt_civ.png: analysis/g_ae12_bt_civ.R outputs/g_iae12_bt_civ.png outputs/g_tae12_bt_civ.png
 	Rscript $<
 
 outputs/g_ia_slice.Rds: analysis/g_ia_slice.R data/iae12.Rds

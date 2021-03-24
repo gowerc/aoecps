@@ -18,12 +18,11 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(kableExtra)
-con <- get_connection()
-nmatches <- tbl(con, "match_meta") %>% tally() %>% collect() %>% pull(n) %>% as.integer()
-maxdate <- tbl(con, "match_meta") %>% summarise(s = max(started, na.rm = TRUE)) %>% collect() %>% pull(s) %>% as_datetime()
-mindate <- tbl(con, "match_meta") %>% summarise(s = min(started, na.rm = TRUE)) %>% collect() %>% pull(s) %>% as_datetime()
-dat <- readRDS("./data/iae12.Rds") %>% filter(ANLFL)
-nvalid <- nrow(dat)
+
+meta_solo <- readRDS("./data/iae12_meta.Rds")
+meta_team <- readRDS("./data/tae12_meta.Rds")
+
+
 ```
 
 ## Introduction
@@ -33,25 +32,25 @@ try and identify areas of imbalance within the game. In particular, unless other
 analysis is based on 1v1 data from ranked matches played on Arabia where both players have an 
 ELO > 1200 and are playing different civs (i.e. no mirror matches are included). 
 
-In total `r prettyNum(nmatches,big.mark=",",scientific=FALSE)` matches with a known result were recorded between
-`r as.Date(mindate)` and `r as.Date(maxdate)` of which `r prettyNum(nvalid,big.mark=",",scientific=FALSE)`
-met the above mentioned criteria and were included into the analysis.  Data is sourced from https://aoe2.net/.
+In total `r prettyNum(meta_solo$n_db,big.mark=",",scientific=FALSE)` matches with a known result were recorded between
+`r as.Date(meta_solo$db_min)` and `r as.Date(meta_solo$db_max)`. Of these `r prettyNum(meta_solo$n_valid_solo,big.mark=",",scientific=FALSE)`
+solo games and `r prettyNum(meta_team$n_valid_team,big.mark=",",scientific=FALSE)` team games met the above mentioned criteria and were included into the analysis.  All data is sourced from https://aoe2.net/.
 
 ## Descriptives
 
 ### Summary of ELO Distribution
 
-<img src="../outputs/g_iae12_desc_ELODIST.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_ELODIST.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
 ### Play Rate by Civilisation
 
-<img src="../outputs/g_iae12_desc_PR.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_PR.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
 ### Number of Matches per Patch
 
-<img src="../outputs/g_iae12_desc_VERDIST.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_VERDIST.png" width="70%" style="display: block; margin: auto;" />
 
 
 ## Primary Results
@@ -68,7 +67,7 @@ Fitting this model to the available data results in the following performance sc
 
 ### Bradley-Terry Performance Scores By Civilisation 
 
-<img src="../outputs/g_iae12_bt_civ.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_bt_civ.png" width="70%" style="display: block; margin: auto;" />
 
 Each point represents the estimated performance score for the corresponding civilisation whilst the interval around the point represents the 95% confidence interval, which can be naively thought of to mean that there is a 95% chance that the true value lies somewhere within this interval. The ELO Delta (25) point acts as a reference to show us the relative increase in performance score based upon a 25 point ELO difference between players. Clearly the impact of ELO massively outweighs the impact of civilisation choice. 
 
@@ -105,21 +104,27 @@ An alternative to modeling the civilisations performance is instead to focus on 
 
 ### Bradley-Terry Performance Scores By Civilisation Classifications
 
-<img src="../outputs/g_iae12_bt_cc.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_bt_cc.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
 Finally, we can use this same logic to explore the impact of the availability of specific units. 
 
 ### Bradley-Terry Performance Scores By Unit
 
-<img src="../outputs/g_iae12_bt_cu.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_bt_cu.png" width="70%" style="display: block; margin: auto;" />
 
 Please note that I was very close to not including this plot as I think it is extremely miss-leading. On review though I decided to include it anyway as I figured it provides a good example of why we shouldn't take model results at face value. For example the obvious interpretation here would be that Heavy Cavalry archers are an OP unit however if you dig a little deep its clear that's not what this means. Looking at the tech tree you will notice that most civilisations have access to Heavy Cavalry Archer with those who don't being the; Aztecs, Burgundians, Incas, Italians, Malay, Mayans, Portuguese, Sicilians & Teutons. Of these the Aztecs, Incas &  Mayans have access to Elite Eagle warriors with the remaining group mostly consisting of some of the weakest civilisations in the game. That is to say that this statistic isn't saying that Heavy Cavalry Archers are OP, instead it is saying that the civilisations that don't have access to Heavy Cavalry Archers are UP, a pedantic but very important distinction. 
 
 
 ### Bradley-Terry Performance Scores By Civilisation (Team Games)
 
-<img src="../outputs/g_tae12_bt_civ.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_tae12_bt_civ.png" width="70%" style="display: block; margin: auto;" />
+
+
+### Bradley-Terry Performance Scores for Solo vs Team Games
+
+<img src="../outputs/g_ae12_bt_civ.png" width="70%" style="display: block; margin: auto;" />
+
 
 ## Secondary Results
 
@@ -142,11 +147,11 @@ for ( civ in names(cl)){
 
 ### Naive Win Rate By Civilisation
 
-<img src="../outputs/g_iae12_desc_WR.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_WR.png" width="70%" style="display: block; margin: auto;" />
 
 ### Civilisation Play rate vs Naive Win Rate
 
-<img src="../outputs/g_iae12_desc_WRPR.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_desc_WRPR.png" width="70%" style="display: block; margin: auto;" />
 
 
 
@@ -154,7 +159,7 @@ for ( civ in names(cl)){
 
 ### Hierarchical Clustering Dendrogram
 
-<img src="../outputs/g_iae12_cvc_clust.png" width="75%" style="display: block; margin: auto;" />
+<img src="../outputs/g_iae12_cvc_clust.png" width="70%" style="display: block; margin: auto;" />
 <br/><br/>
 
 ### Individual Civilisation Plots {.tabset .tabset-fade .tabset-pills}

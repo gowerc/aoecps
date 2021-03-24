@@ -58,3 +58,17 @@ while(timestamp < CUTOFF){
     
     timestamp <-  max(match_meta$started)
 }
+
+
+
+
+# x <- data_raw %>%
+#     jsonlite::fromJSON() %>%
+#     tibble()
+
+# for( i in names(x)){
+#     cat(i, " = as.", class(x[[i]]), "(", i, "),\n", sep = "")
+# }
+
+
+
