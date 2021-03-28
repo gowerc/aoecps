@@ -5,10 +5,10 @@ library(tidyr)
 library(scales)
 library(ggrepel)
 
-solo <- readRDS(file = "data/iae12_bt_civ.Rds") %>%
+solo <- readRDS(file = "data/ia_bt_civ.Rds") %>%
     select(name, solo = est)
 
-team <- readRDS(file = "data/tae12_bt_civ.Rds") %>%
+team <- readRDS(file = "data/ta_bt_civ.Rds") %>%
     select(name, team = est)
 
 
@@ -56,7 +56,7 @@ p <- ggplot(data = dat, aes(x = solo, y = team, label = name)) +
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_ae12_bt_civ.png"
+    filename = "./outputs/g_bt_civ.png"
 )
 
 

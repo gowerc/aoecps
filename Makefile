@@ -14,23 +14,132 @@ dbupdate:
 	Rscript ./analysis/db_game_meta.R
 	Rscript ./analysis/db_matches.R 
 
+
+###### VADs
+
+data/ia.Rds: analysis/ad_ia.R
+	Rscript $<
+
+data/ta.Rds: analysis/ad_ta.R
+	Rscript $<
+
+
+###### Bradley Terry outputs
+
+outputs/g_ia_bt_civ.png: analysis/g_ia_bt_civ.R data/ia.Rds 
+	Rscript $<
+
+outputs/g_ia_bt_civ_PR.png: analysis/g_ia_bt_civ.R data/ia.Rds data/ia_pr.Rds
+	Rscript $<
+
+outputs/g_ia_bt_cu.png: analysis/g_ia_bt_cu.R data/ia.Rds data-raw/civ_unit_map.csv
+	Rscript $<
+
+outputs/g_ta_bt_civ.png: analysis/g_ta_bt_civ.R data/ta.Rds
+	Rscript $<
+
+outputs/g_ta_bt_civ_PR.png: analysis/g_ta_bt_civ.R data/ta.Rds data/ta_pr.Rds
+	Rscript $<
+
+outputs/g_bt_civ.png: analysis/g_bt_civ.R outputs/g_ia_bt_civ.png outputs/g_ta_bt_civ.png
+	Rscript $<
+
+outputs_bt=\
+	outputs/g_ia_bt_civ.png\
+	outputs/g_ia_bt_civ_PR.png\
+	outputs/g_ta_bt_civ.png\
+	outputs/g_ta_bt_civ_PR.png\
+	outputs/g_ia_bt_cu.png\
+	outputs/g_bt_civ.png
+
+
+#### Civ v Civ collection
+outputs/g_ia_cvc_civs_meta.Rds: analysis/g_ia_cvc.R data/ia.Rds
+	Rscript $<
+
+outputs/t_ia_cvc_opt.Rds: analysis/g_ia_cvc.R data/ia.Rds
+	Rscript $<
+
+outputs/g_ia_cvc_clust.png: analysis/g_ia_cvc.R data/ia.Rds
+	Rscript $<
+
+outputs_cvc=\
+	outputs/g_ia_cvc_civs_meta.Rds\
+	outputs/t_ia_cvc_opt.Rds\
+	outputs/g_ia_cvc_clust.png
+
+
+#### g_ia Descriptives
+outputs/g_ia_desc_ELODIST.png: analysis/g_ia_desc.R data/ia.Rds
+	Rscript $<
+
+outputs/g_ia_desc_PR.png: analysis/g_ia_desc.R data/ia.Rds
+	Rscript $<
+
+outputs/g_ia_desc_VERDIST.png: analysis/g_ia_desc.R data/ia.Rds
+	Rscript $<
+	
+outputs/g_ia_desc_WR.png: analysis/g_ia_desc.R data/ia.Rds
+	Rscript $<
+
+data/ia_pr.Rds: analysis/g_ia_desc.R data/ia.Rds
+	Rscript $<
+
+outputs_i_desc=\
+	outputs/g_ia_desc_ELODIST.png\
+	outputs/g_ia_desc_PR.png\
+	outputs/g_ia_desc_VERDIST.png\
+	outputs/g_ia_desc_WR.png
+
+
+#### g_ta Descriptives
+outputs/g_ta_desc_ELODIST.png: analysis/g_ta_desc.R data/ta.Rds
+	Rscript $<
+
+outputs/g_ta_desc_PR.png: analysis/g_ta_desc.R data/ta.Rds
+	Rscript $<
+
+outputs/g_ta_desc_VERDIST.png: analysis/g_ta_desc.R data/ta.Rds
+	Rscript $<
+	
+outputs/g_ta_desc_WR.png: analysis/g_ta_desc.R data/ta.Rds
+	Rscript $<
+
+data/ta_pr.Rds: analysis/g_ta_desc.R data/ta.Rds
+	Rscript $<
+
+outputs_t_desc=\
+	outputs/g_ta_desc_ELODIST.png\
+	outputs/g_ta_desc_PR.png\
+	outputs/g_ta_desc_VERDIST.png\
+	outputs/g_ta_desc_WR.png
+
+
+#### Misc
+outputs/g_ia_slice.png: analysis/g_ia_slice.R data/ia.Rds
+	Rscript $<
+
+outputs/g_ta_slice.png: analysis/g_ta_slice.R data/ta.Rds
+	Rscript $<
+
+outputs/g_pr.png: analysis/g_pr.R data/ia_pr.Rds data/ta_pr.Rds
+	Rscript $<
+
+outputs_meta=\
+	outputs/g_ia_slice.png\
+	outputs/g_ta_slice.png\
+	outputs/g_pr.png
+
 outputs=\
-	outputs/g_ia_slice.Rds\
-	outputs/g_tae12_bt_civ.png\
-	outputs/g_iae12_bt_civ.png\
-	outputs/g_iae12_bt_cc.png\
-	outputs/g_iae12_bt_cu.png \
-	outputs/g_ae12_bt_civ.png\
-	outputs/g_iae12_desc_ELODIST.png\
-	outputs/g_iae12_desc_PR.png\
-	outputs/g_iae12_desc_VERDIST.png\
-	outputs/g_iae12_desc_WR.png\
-	outputs/g_iae12_desc_WRPR.png\
-	outputs/g_iae12_cvc_clust.png\
-	outputs/t_iae12_cvc_opt.Rds\
-	outputs/g_iae12_cvc_civs.Rds
+	$(outputs_meta)\
+	$(outputs_i_desc)\
+	$(outputs_t_desc)\
+	$(outputs_cvc)\
+	$(outputs_bt)
 	
-	
+
+
+
 
 
 outputs/report.html: analysis/report.Rmd $(outputs)
@@ -41,64 +150,3 @@ outputs/report.html: analysis/report.Rmd $(outputs)
             output_dir = './outputs',\
             output_file = 'report.html'\
         )"
-
-
-
-###### VADs
-
-data/iae12.Rds: analysis/ad_iae12.R
-	Rscript $<
-
-data/tae12.Rds: analysis/ad_tae12.R
-	Rscript $<
-
-
-###### Outputs
-
-
-outputs/g_iae12_bt_civ.png: analysis/g_iae12_bt_civ.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_tae12_bt_civ.png: analysis/g_tae12_bt_civ.R data/tae12.Rds
-	Rscript $<
-
-outputs/g_iae12_bt_cc.png: analysis/g_iae12_bt_cc.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_iae12_bt_cu.png: analysis/g_iae12_bt_cu.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_ae12_bt_civ.png: analysis/g_ae12_bt_civ.R outputs/g_iae12_bt_civ.png outputs/g_tae12_bt_civ.png
-	Rscript $<
-
-outputs/g_ia_slice.Rds: analysis/g_ia_slice.R data/iae12.Rds
-	Rscript $<
-
-
-#### Civ v Civ collection
-outputs/g_iae12_cvc_civs.Rd: analysis/g_iae12_cvc.R data/iae12.Rds
-	Rscript $<
-
-outputs/t_iae12_cvc_opt.Rds: analysis/g_iae12_cvc.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_iae12_cvc_clust.png: analysis/g_iae12_cvc.R data/iae12.Rds
-	Rscript $<
-
-
-
-#### g_iae12 collection
-outputs/g_iae12_desc_ELODIST.png: analysis/g_iae12_desc.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_iae12_desc_PR.png: analysis/g_iae12_desc.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_iae12_desc_VERDIST.png: analysis/g_iae12_desc.R data/iae12.Rds
-	Rscript $<
-	
-outputs/g_iae12_desc_WR.png: analysis/g_iae12_desc.R data/iae12.Rds
-	Rscript $<
-
-outputs/g_iae12_desc_WRPR.png: analysis/g_iae12_desc.R data/iae12.Rds
-	Rscript $<

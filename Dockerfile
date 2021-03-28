@@ -55,7 +55,8 @@ RUN Rscript -e "options(warn=2);\
         'ggdendro',\
         'jsonlite',\
         'kableExtra',\
-        'ggrepel'\
+        'ggrepel',\
+        'googlesheets4'\
     ))"
 
 RUN mkdir /app

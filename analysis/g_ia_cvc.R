@@ -15,7 +15,7 @@ library(ggdendro)
 library(HyRiM)
 
 
-adat <- readRDS("./data/iae12.Rds") %>%
+adat <- readRDS("./data/ia.Rds") %>%
     filter(ANLFL)
 
 
@@ -103,24 +103,29 @@ get_civ_plot <- function(CIV, dat){
         mutate(op = fct_inorder(as.character(op)))
 
     p <- ggplot(data = dat2, aes(x = op, y = p, ymin = lci, ymax = uci)) +
+        geom_hline(yintercept = 0.5, col = "red") +
         geom_point() +
         geom_errorbar(width = 0.3) +
-        geom_hline(yintercept = 0.5, col = "red") +
         theme_bw() +
         theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
         xlab("") +
         ylab("Win Rate") +
         ggtitle(NULL, subtitle = glue::glue("Civilisation: {CIV}"))
     
-    return(p)
+    filename <- glue::glue("./outputs/g_ia_cvc_civ_{CIV}.png", CIV = CIV)
+    
+    save_plot(
+        plot = p,
+        filename = filename
+    )
+    return(filename)
 }
 
-civplots <- map(civlist, get_civ_plot, pdat)
+civplots <- map_chr(civlist, get_civ_plot, pdat)
 names(civplots) <- civlist
-
 saveRDS(
     civplots,
-    file = "./outputs/g_iae12_cvc_civs.Rds"
+    file = "./outputs/g_ia_cvc_civs_meta.Rds"
 )
 
 
@@ -148,7 +153,6 @@ ldata <- ddata %>%
     filter(yend == 0) %>% 
     mutate(labs = hmod$labels[hmod$order])
 
-plot(hmod)
 
 
 
@@ -231,7 +235,7 @@ p <- ggplot(ddata3, aes(x = x, y = y, xend = xend, yend = nyend, col = grp)) +
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_cvc_clust.png"
+    filename = "./outputs/g_ia_cvc_clust.png"
 )
 
 ###################################
@@ -258,7 +262,7 @@ OW <- tibble(
 
 saveRDS(
     OW, 
-    file = "./outputs/t_iae12_cvc_opt.Rds"
+    file = "./outputs/t_ia_cvc_opt.Rds"
 )
 
 OW %>%

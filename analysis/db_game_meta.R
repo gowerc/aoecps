@@ -6,19 +6,13 @@ suppressPackageStartupMessages({
     library(purrr)
 }) 
 
+VERSION <- "A"
+
 con <- get_connection()
 
 meta <- api_meta() %>%
     jsonlite::fromJSON()
 
-aoever <- api_matches(count = 1) %>%
-    jsonlite::fromJSON() %>%
-    `[[`("version")
-
-stopifnot(
-    !is.na(aoever),
-    is.character(aoever)
-)
 
 types <- names(meta)[! names(meta) %in% "language"]
 
@@ -28,7 +22,7 @@ dat <- map(
     y = meta
 ) %>% 
     bind_rows() %>%
-    mutate(version = aoever)
+    mutate(version = VERSION)
 
 dbInsert(
     con = con,

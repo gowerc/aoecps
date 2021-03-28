@@ -7,9 +7,9 @@ library(forcats)
 library(tidyr)
 library(ggrepel)
 
-dat <- readRDS("./data/iae12.Rds") %>%
+dat <- readRDS("./data/ta.Rds") %>%
     filter(ANLFL) %>%
-    mutate(elo = (s1_rating + s2_rating) / 2)
+    mutate(elo = rating)
 
 
 
@@ -27,8 +27,7 @@ pdat <- dat %>%
     mutate(elocat = cut(elo, cuts, right = FALSE, dig.lab = 4)) %>%
     group_by(elocat) %>%
     tally() %>%
-    mutate(p = round(n / sum(n) * 100,2) %>% paste0("%")) %>%
-    mutate(y = n + max(n) * 0.025)
+    mutate(p = n / sum(n) * 100)
 
 strings <- dat %>%
     summarise(
@@ -46,16 +45,11 @@ strings <- dat %>%
         
 
 
-footnotes <- c(
-    "ELO is calculated as the mean of the two players in the match"
-) %>%
-    as_footnote()
 
-
-p <- ggplot(pdat, aes(x = elocat, y = n)) +
+p <- ggplot(pdat, aes(x = elocat, y = p)) +
     geom_bar(stat = "identity") +
     theme_bw() +
-    ylab("Count") +
+    ylab("Percentage") +
     scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
     scale_x_discrete(expand = expansion(c(0, 0.06))) +
     xlab("ELO") +
@@ -67,18 +61,16 @@ p <- ggplot(pdat, aes(x = elocat, y = n)) +
         hjust = 1,
         vjust = 1.1
     ) +
-    geom_text(aes(y = y, label = p), hjust = 0.2, angle = 35)+ 
     theme(
         axis.text.x = element_text(hjust = 1, angle = 35),
          plot.caption = element_text(hjust = 0)
-    ) + 
-    labs( caption = footnotes)
+    )
 
 
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_ELODIST.png"
+    filename = "./outputs/g_ta_desc_ELODIST.png"
 )
 
 
@@ -90,9 +82,11 @@ save_plot(
 #
 #######################################
 
+vdat <- dat %>%
+    distinct(match_id, version)
 
 
-p <- ggplot(data = dat, aes(x = oversion)) +
+p <- ggplot(data = vdat, aes(x = version)) +
     geom_bar() +
     theme_bw() +
     scale_y_continuous(breaks = pretty_breaks(8), expand = expansion(c(0, 0.05))) +
@@ -101,7 +95,7 @@ p <- ggplot(data = dat, aes(x = oversion)) +
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_VERDIST.png"
+    filename = "./outputs/g_ta_desc_VERDIST.png"
 )
 
 
@@ -114,12 +108,8 @@ save_plot(
 #######################################
 
 
-dat2 <- bind_rows(
-    dat %>% select(civ = s1_civ, won = s1_won, elo = s1_rating), 
-    dat %>% select(civ = s2_civ, won = s2_won, elo = s2_rating)
-)
-
-wrdat <- dat2 %>%
+wrdat <- dat %>%
+    mutate(civ = civ_name) %>% 
     group_by(civ) %>%
     summarise(n = n(), p = mean(won)) %>%
     ungroup() %>%
@@ -147,7 +137,7 @@ p <- ggplot(data = wrdat2, aes(ymin = plci, y = p, ymax = puci, x = civ)) +
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_WR.png"
+    filename = "./outputs/g_ta_desc_WR.png"
 )
 
 
@@ -177,35 +167,15 @@ p <- ggplot(data = prdat, aes(y = pr, x = civ)) +
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_desc_PR.png"
+    filename = "./outputs/g_ta_desc_PR.png"
 )
 
-
-
-
-#######################################
-#
-# Play Rates vs Win Rates
-#
-#######################################
-
-prwrdat <- wrdat %>%
-    mutate(pstr = round(p * 100,2))
-
-p <- ggplot(prwrdat, aes(x = pstr, y = pr, label = civ)) +
-    geom_point() +
-    geom_text_repel(min.segment.length = unit(0.1, "lines"), alpha = 0.7) +
-    theme_bw() +
-    xlab("Win Rate (%)") +
-    ylab("Play Rate (%)") +
-    geom_vline(xintercept = 50, alpha = 0.6, col = "red") + 
-    geom_hline(yintercept = 1 / nrow(prwrdat) * 100, alpha = 0.6, col = "red") + 
-    scale_x_continuous(breaks = pretty_breaks(10)) +
-    scale_y_continuous(breaks = pretty_breaks(10)) 
-
-save_plot(
-    plot = p,
-    filename = "./outputs/g_iae12_desc_WRPR.png"
+saveRDS(
+    object = prdat %>%
+        mutate(civ = as.character(civ)) %>%
+        select(civ, n, pr),
+    file = "./data/ta_pr.Rds"
 )
+
 
 

@@ -19,8 +19,8 @@ library(ggplot2)
 library(lubridate)
 library(kableExtra)
 
-meta_solo <- readRDS("./data/iae12_meta.Rds")
-meta_team <- readRDS("./data/tae12_meta.Rds")
+meta_solo <- readRDS("./data/ia_meta.Rds")
+meta_team <- readRDS("./data/ta_meta.Rds")
 
 
 ```
@@ -36,24 +36,43 @@ In total `r prettyNum(meta_solo$n_db,big.mark=",",scientific=FALSE)` matches wit
 `r as.Date(meta_solo$db_min)` and `r as.Date(meta_solo$db_max)`. Of these `r prettyNum(meta_solo$n_valid_solo,big.mark=",",scientific=FALSE)`
 solo games and `r prettyNum(meta_team$n_valid_team,big.mark=",",scientific=FALSE)` team games met the above mentioned criteria and were included into the analysis.  All data is sourced from https://aoe2.net/.
 
+
+
+
+
 ## Descriptives
 
-### Summary of ELO Distribution
-
-<img src="../outputs/g_iae12_desc_ELODIST.png" width="70%" style="display: block; margin: auto;" />
+### Number of Matches per Patch (Solo Games)
+<img src="../outputs/g_ia_desc_VERDIST.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
-### Play Rate by Civilisation
-
-<img src="../outputs/g_iae12_desc_PR.png" width="70%" style="display: block; margin: auto;" />
+### Summary of ELO Distribution (Solo Games)
+<img src="../outputs/g_ia_desc_ELODIST.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
-### Number of Matches per Patch
+### Play Rate by Civilisation (Solo Games)
+<img src="../outputs/g_ia_desc_PR.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
 
-<img src="../outputs/g_iae12_desc_VERDIST.png" width="70%" style="display: block; margin: auto;" />
+### Number of Matches per Patch (Team Games)
+<img src="../outputs/g_ta_desc_VERDIST.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+### Summary of ELO Distribution (Team Games)
+<img src="../outputs/g_ta_desc_ELODIST.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+### Play Rate by Civilisation (Team Games)
+<img src="../outputs/g_ta_desc_PR.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+### Play Rate by Civilisation (Solo vs Team Games)
+<img src="../outputs/g_pr.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
 
 
-## Primary Results
+
+## Bradley-Terry Modeling
 
 To assess civilisation performance a Bradley-Terry model was fitted to the data. This model works by assuming that each civilisation has a latent (i.e. hidden/unknown) performance rating value $X_i$. The probability of civilisation $i$ beating civilisation $j$ in match $k$ is then calculated as:
 $$\frac{1}{1+e^{-\lambda_{ijk}}}$$
@@ -65,9 +84,6 @@ Where:
 
 Fitting this model to the available data results in the following performance score estimates:
 
-### Bradley-Terry Performance Scores By Civilisation 
-
-<img src="../outputs/g_iae12_bt_civ.png" width="70%" style="display: block; margin: auto;" />
 
 Each point represents the estimated performance score for the corresponding civilisation whilst the interval around the point represents the 95% confidence interval, which can be naively thought of to mean that there is a 95% chance that the true value lies somewhere within this interval. The ELO Delta (25) point acts as a reference to show us the relative increase in performance score based upon a 25 point ELO difference between players. Clearly the impact of ELO massively outweighs the impact of civilisation choice. 
 
@@ -102,87 +118,90 @@ Note that an obvious limitation to this modeling approach is that it assumes lin
 
 An alternative to modeling the civilisations performance is instead to focus on the civilisation classification to see if any particular class of civilisation is showing evidence of being dominant. Using the classes defined in game we get the following performance metrics:
 
-### Bradley-Terry Performance Scores By Civilisation Classifications
 
-<img src="../outputs/g_iae12_bt_cc.png" width="70%" style="display: block; margin: auto;" />
+
+### Bradley-Terry Performance Scores By Civilisation (Solo Games)
+<img src="../outputs/g_ia_bt_civ.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
-Finally, we can use this same logic to explore the impact of the availability of specific units. 
+### Bradley-Terry Performance Scores By Civilisation and Play Rate (Solo Games)
+<img src="../outputs/g_ia_bt_civ_PR.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
 
-### Bradley-Terry Performance Scores By Unit
+### Bradley-Terry Performance Scores By Unit (Solo Games)
+<img src="../outputs/g_ia_bt_cu.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
 
-<img src="../outputs/g_iae12_bt_cu.png" width="70%" style="display: block; margin: auto;" />
 
-Please note that I was very close to not including this plot as I think it is extremely miss-leading. On review though I decided to include it anyway as I figured it provides a good example of why we shouldn't take model results at face value. For example the obvious interpretation here would be that Heavy Cavalry archers are an OP unit however if you dig a little deep its clear that's not what this means. Looking at the tech tree you will notice that most civilisations have access to Heavy Cavalry Archer with those who don't being the; Aztecs, Burgundians, Incas, Italians, Malay, Mayans, Portuguese, Sicilians & Teutons. Of these the Aztecs, Incas &  Mayans have access to Elite Eagle warriors with the remaining group mostly consisting of some of the weakest civilisations in the game. That is to say that this statistic isn't saying that Heavy Cavalry Archers are OP, instead it is saying that the civilisations that don't have access to Heavy Cavalry Archers are UP, a pedantic but very important distinction. 
+
 
 
 ### Bradley-Terry Performance Scores By Civilisation (Team Games)
-
-<img src="../outputs/g_tae12_bt_civ.png" width="70%" style="display: block; margin: auto;" />
-
-
-### Bradley-Terry Performance Scores for Solo vs Team Games
-
-<img src="../outputs/g_ae12_bt_civ.png" width="70%" style="display: block; margin: auto;" />
-
-
-## Secondary Results
-
-### Difference in Civilisation Win Rate from the Mean by ELO 
-
-```{r, echo = FALSE, results = "asis"}
-cl <- readRDS("./outputs/g_ia_slice.Rds")
-id <- "cvcwr"
-cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
-cat(glue::glue('<input id="{id}">'))
-for ( civ in names(cl)){
-    display <- if_else(civ == "Aztecs", "true", "none")
-    cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
-    print(cl[[civ]])
-    cat("</div>")
-}
-```
-
+<img src="../outputs/g_ta_bt_civ.png" width="70%" style="display: block; margin: auto;" />
 <br/> <br/>
 
-### Naive Win Rate By Civilisation
+### Bradley-Terry Performance Scores By Civilisation and Play Rate (Team Games)
+<img src="../outputs/g_ta_bt_civ_PR.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
 
-<img src="../outputs/g_iae12_desc_WR.png" width="70%" style="display: block; margin: auto;" />
+### Bradley-Terry Performance Scores By Civilisation (Solo vs Team Games)
+<img src="../outputs/g_bt_civ.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
 
-### Civilisation Play rate vs Naive Win Rate
 
-<img src="../outputs/g_iae12_desc_WRPR.png" width="70%" style="display: block; margin: auto;" />
+
+
+
+## Naive Win Rates
+
+### Naive Win Rate By Civilisation (Solo Games)
+<img src="../outputs/g_ia_desc_WR.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+### Difference in Civilisation Win Rate from the Mean by ELO  (Solo Games)
+<img src="../outputs/g_ia_slice.png" width="80%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+### Naive Win Rate By Civilisation (Team Games)
+<img src="../outputs/g_ta_desc_WR.png" width="70%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+### Difference in Civilisation Win Rate from the Mean by ELO  (Team Games)
+<img src="../outputs/g_ta_slice.png" width="80%" style="display: block; margin: auto;" />
+<br/> <br/>
+
+
 
 
 
 ## Civilisation vs Civilisation Results
 
-### Hierarchical Clustering Dendrogram
-
-<img src="../outputs/g_iae12_cvc_clust.png" width="70%" style="display: block; margin: auto;" />
+### Hierarchical Clustering Dendrogram (Solo Games)
+<img src="../outputs/g_ia_cvc_clust.png" width="70%" style="display: block; margin: auto;" />
 <br/><br/>
 
-### Individual Civilisation Plots {.tabset .tabset-fade .tabset-pills}
 
+### Individual Civilisation Plots (Solo Games) {.tabset .tabset-fade .tabset-pills}
 
 ```{r, echo = FALSE, results = "asis"}
-cl <- readRDS("./outputs/g_iae12_cvc_civs.Rds")
+cl <- readRDS("./outputs/g_ia_cvc_civs_meta.Rds")
 id <- "cvcip"
 cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
 cat(glue::glue('<input id="{id}">'))
 for ( civ in names(cl)){
+    file <- cl[[civ]]
     display <- if_else(civ == "Aztecs", "true", "none")
     cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
-    print(cl[[civ]])
+    cat(glue::glue('<img src=".{file}" width="70%" style="display: block; margin: auto;" />'))
     cat("</div>")
 }
 ```
 
 
-### Optimal Civilisation Selection
+### Optimal Civilisation Selection (Solo Games)
 
 ```{r, echo = FALSE, results = "asis"}
-odat <- readRDS("./outputs/t_iae12_cvc_opt.Rds") %>%
+odat <- readRDS("./outputs/t_ia_cvc_opt.Rds") %>%
     filter(p != 0) %>%
     mutate(p = paste(round(p * 100,2), "%")) %>%
     select(Civilisation = names, `Selection Rate` = p) 

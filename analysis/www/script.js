@@ -31,7 +31,6 @@ init_autocomplete = function (id) {
 
 
 $(document).ready(function(){
-    init_autocomplete("cvcwr");
     init_autocomplete("cvcip");
 })
 

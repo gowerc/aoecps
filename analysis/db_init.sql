@@ -76,3 +76,4 @@ CREATE TABLE IF NOT EXISTS public.game_meta (
     PRIMARY KEY (version, type, id)
 );
 
+

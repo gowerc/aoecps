@@ -9,14 +9,11 @@ library(purrr)
 library(mgcv)
 
 
-dat <- readRDS("./data/ia.Rds") %>%
-    filter(s1_rating >= 800 & s2_rating >= 800)
+dat <- readRDS("./data/ta.Rds") %>%
+    mutate(elo = rating) %>%
+    mutate(civ = civ_name) %>% 
+    filter( elo >= 1100)
 
-dat2 <- bind_rows(
-    dat %>% select(civ = s1_civ, won = s1_won, elo = s1_rating),
-    dat %>% select(civ = s2_civ, won = s2_won, elo = s2_rating)
-) %>%
-    mutate(elo = as.numeric(elo))
 
 
 get_slice <- function(y, dat){
@@ -46,16 +43,16 @@ get_slice <- function(y, dat){
 }
 
 cuts <- seq(
-    from = signif(min(dat2$elo), 2),
-    to = signif(max(dat2$elo), 2),
+    from = signif(min(dat$elo), 2),
+    to = signif(max(dat$elo), 2),
     by = 10
 )
 
 
-res <- map_df(cuts, get_slice, dat = dat2) 
+res <- map_df(cuts, get_slice, dat = dat) 
 
 res2 <- res %>%
-    filter(limit_lower >= min(dat2$elo), limit_upper <= max(dat2$elo)) %>%
+    filter(limit_lower >= min(dat$elo), limit_upper <= max(dat$elo)) %>%
     mutate(
         p_adj = p - pelo,
         plci_adj = plci - pelo,
@@ -97,7 +94,7 @@ pdat <- map_df(civlist, get_slice_dat, res2)
 footnotes <- c(
     "Win rates are calculated at each point X after filtering the data to",
     "only include matches where log(x) - 0.1 <= log(x) <= log(x) + 0.1<br/>",
-    "All matches where both players have a known ELO > 800 are considered.<br/>",
+    "All matches where players ELO is >= 1100 are included.<br/>",
     "All lines have been smoothed using a GAM."
 ) %>%
     as_footnote()
@@ -122,7 +119,7 @@ p <- ggplot(data = pdat, aes(ymin = lci, ymax = uci, x = y, group = civ, fill = 
 
 
 save_plot(
-    filename = "./outputs/g_ia_slice.png",
+    filename = "./outputs/g_ta_slice.png",
     plot = p
 )
 

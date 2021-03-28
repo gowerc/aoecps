@@ -1,4 +1,4 @@
-## Analysis Dataset Individual Arabia ELO > 1200  (IAE12)
+## Analysis Dataset Individual Arabia ELO > 1200  (Ia)
 
 pkgload::load_all()
 library(dplyr)
@@ -16,12 +16,12 @@ meta <- tbl(con, "game_meta") %>% collect()
 
 meta_civ <- meta %>% 
     filter(type == "civ") %>% 
-    select(version, civ = id, civ_name = string)
+    select(mversion = version, civ = id, civ_name = string)
 
 
 meta_map <- meta %>% 
     filter(type == "map_type") %>% 
-    select(version, map_type = id, map_name = string)
+    select(mversion = version, map_type = id, map_name = string)
 
 
 keep_matches <- tbl(con, "match_meta") %>%
@@ -36,16 +36,16 @@ dat <- tbl(con, "match_players") %>%
 
 
 dat2 <- dat %>%
-    mutate(oversion = version) %>% 
-    mutate(version = version_map(version)) %>%
-    left_join(meta_civ, by = c("civ", "version")) %>%
-    left_join(meta_map, by = c("map_type", "version")) %>%
+    mutate(mversion = get_meta_version(started)) %>%
+    left_join(meta_civ, by = c("civ", "mversion")) %>%
+    left_join(meta_map, by = c("map_type", "mversion")) %>%
+    mutate(version = if_else( is.na(version), "Unknown", version)) %>% 
     filter(map_name == "Arabia")
 
 
 slot_meta <- dat2 %>%
-    filter(slot == 1) %>% 
-    select(match_id, map_name, version, oversion)
+    filter(slot == 1) %>%
+    select(match_id, map_name, version)
 
 
 slot1 <- dat2 %>%
@@ -72,8 +72,6 @@ adat <- slot1 %>%
     inner_join(slot2, by = "match_id") %>%
     left_join(slot_meta, by = "match_id") %>%
     mutate(
-        p1_civ = civmap(s1_civ),
-        p2_civ = civmap(s2_civ),
         delo = (s1_rating - s2_rating) / 25,
         p1_result = as.numeric(s1_won)
     )
@@ -93,7 +91,7 @@ adat2 <- adat %>%
 
 saveRDS(
     object = adat2,
-    file = "./data/iae12.Rds"
+    file = "./data/ia.Rds"
 )
 
 max_date <- tbl(con, "match_meta") %>% 
@@ -116,5 +114,5 @@ solo_meta <- list(
 
 saveRDS(
     object = solo_meta, 
-    file = "./data/iae12_meta.Rds"
+    file = "./data/ia_meta.Rds"
 )

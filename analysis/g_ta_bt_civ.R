@@ -5,8 +5,9 @@ library(tidyr)
 library(assertthat)
 library(forcats)
 library(scales)
+library(ggrepel)
 
-adat <- readRDS("./data/tae12.Rds") %>%
+adat <- readRDS("./data/ta.Rds") %>%
     filter(ANLFL)
 
 civ_levels <- adat %>%
@@ -90,7 +91,7 @@ dat <- tibble(
 
 saveRDS(
     object = dat, 
-    file = "data/tae12_bt_civ.Rds"
+    file = "data/ta_bt_civ.Rds"
 )
 
 
@@ -98,14 +99,18 @@ saveRDS(
 performance_mid <- dat %>%
     filter(name != "ELO Delta (25)") %>%
     pull(est) %>%
-    mean()
+    median()
+
+performance_upper <- performance_mid + logit(0.55)
+performance_lower <- performance_mid + logit(0.45)
 
 
 footnotes <- c(
-    "Performance scores represent the relative difference from the reference civilisation (Vikings).<br/>",
-    "The red line represents the median performance score across all civilisations."
+    "Performance scores represent the relative difference from the reference civilisation (Vikings)<br/>",
+    "The solid red line represents the median performance score across all civilisations"
 ) %>%
     as_footnote()
+
 
 p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = est)) +
     geom_errorbar(width = 0.3) +
@@ -124,5 +129,49 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_tae12_bt_civ.png"
+    filename = "./outputs/g_ta_bt_civ.png"
+)
+
+
+#######################################
+#
+# BT Score vs Win Rates
+#
+#######################################
+
+prdat <- readRDS("./data/ta_pr.Rds")
+
+
+prdat2 <- dat %>%
+    filter(name != "ELO Delta (25)") %>%
+    mutate(civ = name) %>% 
+    left_join(prdat, by = "civ")
+
+
+footnotes <- c(
+    "Performance scores represent the relative difference from the reference civilisation (Vikings)<br/>",
+    "The vertical reference line represents the median performance score across all civilisations<br/>",
+    "The horizontal reference line represents the expected play rate if civilisations were chosen randomly"
+) %>%
+    as_footnote()
+
+p2 <- ggplot(data = prdat2, aes(x = est, y = pr, label = name)) +
+    geom_point() +
+    geom_vline(xintercept = performance_mid, col = "red") +
+    geom_hline(yintercept = 1 / nrow(prdat2) * 100, alpha = 0.6, col = "red") +
+    geom_text_repel(min.segment.length = unit(0.1, "lines"), alpha = 0.7) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 50, hjust = 1),
+        plot.caption = element_text(hjust = 0)
+    ) +
+    labs(caption = footnotes) + 
+    xlab("Performance Score Delta") +
+    ylab("Play Rate (%)") +
+    scale_x_continuous(breaks = pretty_breaks(10)) +
+    scale_y_continuous(breaks = pretty_breaks(10))
+
+save_plot(
+    plot = p2,
+    filename = "./outputs/g_ta_bt_civ_PR.png"
 )

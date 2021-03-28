@@ -1,5 +1,4 @@
-# Analysis Dataset Team Arabia ELO > 1200  (IAE12)
-
+# Analysis Dataset Team Arabia ELO > 1200  (Ia)
 pkgload::load_all()
 library(dplyr)
 library(dbplyr)
@@ -9,18 +8,22 @@ library(stringr)
 library(assertthat)
 library(forcats)
 
+
 con <- get_connection()
+
 
 meta <- tbl(con, "game_meta") %>% collect()
 
+
 meta_civ <- meta %>% 
     filter(type == "civ") %>% 
-    select(version, civ = id, civ_name = string)
+    select(mversion = version, civ = id, civ_name = string)
 
 
 meta_map <- meta %>% 
     filter(type == "map_type") %>% 
-    select(version, map_type = id, map_name = string)
+    select(mversion = version, map_type = id, map_name = string)
+
 
 map_numbers <- meta_map %>%
     filter(map_name == "Arabia") %>%
@@ -38,24 +41,34 @@ dat <- tbl(con, "match_players") %>%
     inner_join(keep_matches, by = "match_id") %>% 
     collect()
 
+
 dat2 <- dat %>%
-    mutate(oversion = version) %>% 
-    mutate(version = version_map(version)) %>%
-    left_join(meta_civ, by = c("civ", "version")) %>%
-    left_join(meta_map, by = c("map_type", "version")) %>%
-    filter(map_name == "Arabia")
+    mutate(mversion = get_meta_version(started)) %>%
+    left_join(meta_civ, by = c("civ", "mversion")) %>%
+    left_join(meta_map, by = c("map_type", "mversion")) %>%
+    filter(map_name == "Arabia") %>%
+    select(-civ, -map_type, -mversion)
+
+
+no_rating <- dat2 %>%
+    filter(is.na(rating)) %>%
+    pull(match_id) %>%
+    unique()
 
 elo_allow <- dat2 %>%
     group_by(match_id) %>%
-    summarise(m = mean(rating)) %>%
-    filter(!is.na(m) & m >= 1500)
+    summarise(m = min(rating)) %>%
+    filter(!is.na(m) & m >= 1400)
+
 
 dat3 <- dat2 %>%
+    filter(!match_id %in% no_rating) %>% 
     mutate(ANLFL = match_id %in% elo_allow$match_id)
+
 
 saveRDS(
     object = dat3,
-    file = "./data/tae12.Rds"
+    file = "./data/ta.Rds"
 )
 
 
@@ -67,7 +80,7 @@ team_meta <- list(
 
 saveRDS(
     object = team_meta, 
-    file = "./data/tae12_meta.Rds"
+    file = "./data/ta_meta.Rds"
 )
 
 

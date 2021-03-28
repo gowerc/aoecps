@@ -1,0 +1,25 @@
+General Rules,name,Aztecs,Berbers,Britons,Bulgarians,Burgundians,Burmese,Byzantines,Celts,Chinese,Cumans,Ethiopians,Franks,Goths,Huns,Incas,Indians,Italians,Japanese,Khmer,Koreans,Lithuanians,Magyars,Malay,Malians,Mayans,Mongols,Persians,Portuguese,Saracens,Sicilians,Slavs,Spanish,Tatars,Teutons,Turks,Vietnamese,Vikings
+Arb + FBS,Archers,,,x,,,,x,,x,,x,,,,x,,x,x,x,x,,x,x,,x,,x,x,x,,,,,,,x,x
+Additional Bonus,Skirmishers,x,x,,,,,x,,,,,,,,x,,,,,,x,,,,x,,,,,,,,,,,x,
+Available,Cannoneers,,x,,,x,,x,,,,,x,x,,,x,x,x,,x,x,,,x,,,x,x,x,,,x,x,x,x,,x
+TR + BL + FBS,Cavalry Archers,,,,x,,,,,x,,,,x,x,,x,,x,,,x,x,,,,x,,,x,,,x,x,,x,x,
+Champ + FBS,Swordsman,x,x,x,x,x,x,,x,x,x,,x,x,,x,,x,x,,,,,x,x,,x,,x,x,x,x,x,,x,x,,x
+Halb + F armor,Pointy Boys,x,,x,x,x,x,,x,x,x,x,x,x,,x,,,x,,x,x,,x,x,x,,x,x,,x,x,x,,x,,x,
+Available,Eagles,x,,,,,,,,,,,,,,x,,,,,,,,,,x,,,,,,,,,,,,
+FU Cavalier + BL,Knights,,x,,x,x,x,,,x,x,,x,,x,,,x,,x,,x,x,,x,,,x,x,,x,x,x,x,x,x,,
+(Huss or LC BL) + F Amror,Scouts,,x,,x,x,x,x,,x,x,,x,,x,,x,x,,x,,x,x,,x,,x,x,x,x,x,x,x,x,,x,x,
+HC Available,Camels,,x,,,,,x,,x,,x,,,,,x,,,,,,,,x,,x,x,,x,,,,x,,x,,
+Avalable,Battle Elephants,,,,,,x,,,,,,,,,,,,,x,,,,x,,,,,,,,,,,,,x,
+Available,Steppe Lancer,,,,,,,,,,x,,,,,,,,,,,,,,,,x,,,,,,,x,,,,
+Available,Siege Ram,x,,,x,,,x,x,x,x,x,,,x,x,,,,x,,,,,,x,x,x,,x,x,x,x,x,x,x,,x
+Onager + SE,Onager,x,x,x,x,,x,,x,,x,x,x,,,x,x,,x,x,x,,x,x,x,,x,,x,x,x,x,,x,x,,x,x
+HS + SE,Heavy Scorpion,,x,x,x,,x,,x,x,,x,x,,,x,,,x,x,,,x,x,,,x,,,,x,x,,x,x,,,x
+Available,BBC,,x,,,x,x,x,,,,x,x,x,,,x,x,,,x,x,,x,x,,,x,x,x,,,x,,x,x,x,
+Redemption + Atonement,Monk,x,x,,,x,x,x,,,,,,,,,,x,x,,,x,,x,x,,,,x,x,,x,x,,x,x,,
+Hera Tier List A+,OP Unique Unit,,x,x,,,x,x,,x,x,,,x,,,,,,,x,,,,,x,x,,,,,,x,x,,x,x,
+"Classed as ""Naval"" Civ",Naval,,x,,,,,,,,,,,,,,,x,,,x,,,x,,,,,x,x,,,,,,,,x
+Castle / Tower bonus,Structures,,,,x,,,x,,,,,x,,,x,,,x,,x,,,,,,,x,,,x,,,,,,,
+,Food Bonus,x,x,,,,,,,,,,,,,,x,,,x,,,,,,,,,,,,x,,,x,,,
+,Wood Bonus,,,x,,,x,,x,,,,x,,x,x,,,x,,,,,,x,x,,,,,x,,,,,,x,
+,Gold Bonus,,,,,x,,,,,,,,,,,x,,,,,,,,x,x,,,x,x,x,,x,,,x,,
+"Starting benefits (herdables, 1 off resources)",Early Start Bonus,,,x,,,,,,x,x,x,x,x,,,,,,x,,x,,x,,,x,x,,,,,,x,,,,x

@@ -5,33 +5,40 @@ library(forcats)
 library(readr)
 library(ggplot2)
 library(scales)
+library(tidyr)
 
 
-adat <- readRDS("./data/iae12.Rds") %>%
+adat <- readRDS("./data/ia.Rds") %>%
     filter(ANLFL)
 
-# adat <- adat %>% sample_n(6000)
+mapdat <- read_csv(
+    file = "./data-raw/civ_unit_map.csv",
+    col_types = cols(
+        .default = col_character()
+    )
+) %>%
+    select(-`General Rules`) %>%
+    pivot_longer(names_to = "civ", values_to = "flag", -name) %>%
+    mutate(flag = if_else(!is.na(flag), 1, 0)) %>%
+    pivot_wider(names_from = "name", values_from = "flag")
 
-civclass <- get_civclass()
 
 s1dat <- adat %>%
     select(rating = s1_rating, civ = s1_civ) %>%
     mutate(rating = rating / 25) %>% 
-    left_join(civclass, by = "civ") %>%
-    select(-civ) %>%
-    mutate(across(where(is.logical), as.numeric))
+    left_join(mapdat, by = "civ") %>%
+    select(-civ)
+
 
 s2dat <- adat %>%
     select(rating = s2_rating, civ = s2_civ) %>%
     mutate(rating = rating / 25) %>%
-    left_join(civclass, by = "civ") %>%
-    select(-civ) %>%
-    mutate(across(where(is.logical), as.numeric))
+    left_join(mapdat, by = "civ") %>%
+    select(-civ)
 
 
-
-team_a_mat <- model.matrix(~ -1 + ., data = s1dat)
-team_b_mat <- model.matrix(~ -1 + ., data = s2dat)
+team_a_mat <- model.matrix(~   rating  + . , data = s1dat)[,-1]
+team_b_mat <- model.matrix(~   rating  + . , data = s2dat)[,-1]
 
 stopifnot(
     nrow(team_a_mat) == nrow(team_b_mat),
@@ -40,22 +47,20 @@ stopifnot(
 
 diff_mat <- team_a_mat - team_b_mat
 
-ddat <- as_tibble(diff_mat) %>%
-    mutate(result = adat$s1_won) 
+mdat <- as_tibble(diff_mat) %>%
+    mutate( result = adat$s1_won) 
 
 mod <- glm(
     family = binomial(),
     formula = result ~ . -1,
-    data = ddat
+    data = mdat
 )
 
 est <- coef(mod)
 se <- sqrt(diag(vcov(mod)))
 
-
-
 dat <- tibble(
-    name = c("ELO Delta (25)", str_to_title(colnames(civclass)[-1])),
+    name = c("ELO Delta (25)", colnames(mapdat)[-1]),
     est = est,
     se = se,
     lci = est - 1.96 * se,
@@ -65,23 +70,15 @@ dat <- tibble(
     mutate(name = fct_inorder(name))
 
 
-performance_mid <- dat %>%
-    filter(name != "ELO Delta (25)") %>%
-    pull(est) %>%
-    mean()
-
-
-
 footnotes <- c(
-    "Performance scores represent the relative difference from the reference civilisation (Vikings).<br/>",
-    "The red line represents the median performance score across all civilisations."
+    "Performance scores represent the relative difference from",
+    "a hypothetical civilisation that doesn't have any specilisation"
 ) %>%
     as_footnote()
 
 p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = est)) +
     geom_errorbar(width = 0.3) +
     geom_point() +
-    geom_hline(yintercept = performance_mid, col = "red") +
     theme_bw() +
     theme(
         axis.text.x = element_text(angle = 50, hjust = 1),
@@ -95,6 +92,5 @@ p <- ggplot(data = dat, aes(x = name, group = name, ymin = lci, ymax = uci, y = 
 
 save_plot(
     plot = p,
-    filename = "./outputs/g_iae12_bt_cc.png"
+    filename = "./outputs/g_ia_bt_cu.png"
 )
-
