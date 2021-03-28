@@ -1,4 +1,3 @@
-# Analysis Dataset Team Arabia ELO > 1200  (Ia)
 pkgload::load_all()
 library(dplyr)
 library(dbplyr)
@@ -44,6 +43,7 @@ dat <- tbl(con, "match_players") %>%
 
 dat2 <- dat %>%
     mutate(mversion = get_meta_version(started)) %>%
+    mutate(version = if_else(is.na(version), "Unknown", version)) %>% 
     left_join(meta_civ, by = c("civ", "mversion")) %>%
     left_join(meta_map, by = c("map_type", "mversion")) %>%
     filter(map_name == "Arabia") %>%

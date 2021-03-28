@@ -1,4 +1,3 @@
-## Analysis Dataset Individual Arabia ELO > 1200  (Ia)
 
 pkgload::load_all()
 library(dplyr)
@@ -34,13 +33,23 @@ dat <- tbl(con, "match_players") %>%
     inner_join(keep_matches, by = "match_id") %>%
     collect()
 
+sum_not_na <- function(x) sum(!is.na(x))
+
+valid_rating <- dat %>%
+    group_by(match_id) %>%
+    summarise(n_na = sum_not_na(rating)) %>% 
+    filter(n_na == 2) %>% 
+    pull(match_id)
+
+
 
 dat2 <- dat %>%
     mutate(mversion = get_meta_version(started)) %>%
     left_join(meta_civ, by = c("civ", "mversion")) %>%
     left_join(meta_map, by = c("map_type", "mversion")) %>%
-    mutate(version = if_else( is.na(version), "Unknown", version)) %>% 
-    filter(map_name == "Arabia")
+    mutate(version = if_else(is.na(version), "Unknown", version)) %>%
+    filter(map_name == "Arabia") %>%
+    filter(match_id %in% valid_rating)
 
 
 slot_meta <- dat2 %>%

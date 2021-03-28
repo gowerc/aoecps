@@ -3,7 +3,6 @@
 export(api_matches)
 export(api_meta)
 export(as_footnote)
-export(civmap)
 export(dbInsert)
 export(get_connection)
 export(get_meta_version)

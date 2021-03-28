@@ -19,7 +19,7 @@ invlogit <- function(x){
     exp(x)/(1+exp(x))
 }
 
-s
+
 #' @export 
 as_footnote <- function(x, width = 140){
     x %>%

@@ -9,3 +9,5 @@ data/*
 *.RDS
 Rplots.pdf
 outputs/*
+.gsauth
+!.gitkeep

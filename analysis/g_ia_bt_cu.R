@@ -17,7 +17,6 @@ mapdat <- read_csv(
         .default = col_character()
     )
 ) %>%
-    select(-`General Rules`) %>%
     pivot_longer(names_to = "civ", values_to = "flag", -name) %>%
     mutate(flag = if_else(!is.na(flag), 1, 0)) %>%
     pivot_wider(names_from = "name", values_from = "flag")

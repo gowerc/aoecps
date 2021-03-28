@@ -1,25 +1,25 @@
-General Rules,name,Aztecs,Berbers,Britons,Bulgarians,Burgundians,Burmese,Byzantines,Celts,Chinese,Cumans,Ethiopians,Franks,Goths,Huns,Incas,Indians,Italians,Japanese,Khmer,Koreans,Lithuanians,Magyars,Malay,Malians,Mayans,Mongols,Persians,Portuguese,Saracens,Sicilians,Slavs,Spanish,Tatars,Teutons,Turks,Vietnamese,Vikings
-Arb + FBS,Archers,,,x,,,,x,,x,,x,,,,x,,x,x,x,x,,x,x,,x,,x,x,x,,,,,,,x,x
-Additional Bonus,Skirmishers,x,x,,,,,x,,,,,,,,x,,,,,,x,,,,x,,,,,,,,,,,x,
-Available,Cannoneers,,x,,,x,,x,,,,,x,x,,,x,x,x,,x,x,,,x,,,x,x,x,,,x,x,x,x,,x
-TR + BL + FBS,Cavalry Archers,,,,x,,,,,x,,,,x,x,,x,,x,,,x,x,,,,x,,,x,,,x,x,,x,x,
-Champ + FBS,Swordsman,x,x,x,x,x,x,,x,x,x,,x,x,,x,,x,x,,,,,x,x,,x,,x,x,x,x,x,,x,x,,x
-Halb + F armor,Pointy Boys,x,,x,x,x,x,,x,x,x,x,x,x,,x,,,x,,x,x,,x,x,x,,x,x,,x,x,x,,x,,x,
-Available,Eagles,x,,,,,,,,,,,,,,x,,,,,,,,,,x,,,,,,,,,,,,
-FU Cavalier + BL,Knights,,x,,x,x,x,,,x,x,,x,,x,,,x,,x,,x,x,,x,,,x,x,,x,x,x,x,x,x,,
-(Huss or LC BL) + F Amror,Scouts,,x,,x,x,x,x,,x,x,,x,,x,,x,x,,x,,x,x,,x,,x,x,x,x,x,x,x,x,,x,x,
-HC Available,Camels,,x,,,,,x,,x,,x,,,,,x,,,,,,,,x,,x,x,,x,,,,x,,x,,
-Avalable,Battle Elephants,,,,,,x,,,,,,,,,,,,,x,,,,x,,,,,,,,,,,,,x,
-Available,Steppe Lancer,,,,,,,,,,x,,,,,,,,,,,,,,,,x,,,,,,,x,,,,
-Available,Siege Ram,x,,,x,,,x,x,x,x,x,,,x,x,,,,x,,,,,,x,x,x,,x,x,x,x,x,x,x,,x
-Onager + SE,Onager,x,x,x,x,,x,,x,,x,x,x,,,x,x,,x,x,x,,x,x,x,,x,,x,x,x,x,,x,x,,x,x
-HS + SE,Heavy Scorpion,,x,x,x,,x,,x,x,,x,x,,,x,,,x,x,,,x,x,,,x,,,,x,x,,x,x,,,x
-Available,BBC,,x,,,x,x,x,,,,x,x,x,,,x,x,,,x,x,,x,x,,,x,x,x,,,x,,x,x,x,
-Redemption + Atonement,Monk,x,x,,,x,x,x,,,,,,,,,,x,x,,,x,,x,x,,,,x,x,,x,x,,x,x,,
-Hera Tier List A+,OP Unique Unit,,x,x,,,x,x,,x,x,,,x,,,,,,,x,,,,,x,x,,,,,,x,x,,x,x,
-"Classed as ""Naval"" Civ",Naval,,x,,,,,,,,,,,,,,,x,,,x,,,x,,,,,x,x,,,,,,,,x
-Castle / Tower bonus,Structures,,,,x,,,x,,,,,x,,,x,,,x,,x,,,,,,,x,,,x,,,,,,,
-,Food Bonus,x,x,,,,,,,,,,,,,,x,,,x,,,,,,,,,,,,x,,,x,,,
-,Wood Bonus,,,x,,,x,,x,,,,x,,x,x,,,x,,,,,,x,x,,,,,x,,,,,,x,
-,Gold Bonus,,,,,x,,,,,,,,,,,x,,,,,,,,x,x,,,x,x,x,,x,,,x,,
-"Starting benefits (herdables, 1 off resources)",Early Start Bonus,,,x,,,,,,x,x,x,x,x,,,,,,x,,x,,x,,,x,x,,,,,,x,,,,x
+name,Aztecs,Berbers,Britons,Bulgarians,Burgundians,Burmese,Byzantines,Celts,Chinese,Cumans,Ethiopians,Franks,Goths,Huns,Incas,Indians,Italians,Japanese,Khmer,Koreans,Lithuanians,Magyars,Malay,Malians,Mayans,Mongols,Persians,Portuguese,Saracens,Sicilians,Slavs,Spanish,Tatars,Teutons,Turks,Vietnamese,Vikings
+Archers,NA,NA,x,NA,NA,NA,x,NA,x,NA,x,NA,NA,NA,x,NA,x,x,x,x,NA,x,x,NA,x,NA,x,x,x,NA,NA,NA,NA,NA,NA,x,x
+Skirmishers,x,x,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,x,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA
+Cannoneers,NA,x,NA,NA,x,NA,x,NA,NA,NA,NA,x,x,NA,NA,x,x,x,NA,x,x,NA,NA,x,NA,NA,x,x,x,NA,NA,x,x,x,x,NA,x
+Cavalry Archers,NA,NA,NA,x,NA,NA,NA,NA,x,NA,NA,NA,x,x,NA,x,NA,x,NA,NA,x,x,NA,NA,NA,x,NA,NA,x,NA,NA,x,x,NA,x,x,NA
+Swordsman,x,x,x,x,x,x,NA,x,x,x,NA,x,x,NA,x,NA,x,x,NA,NA,NA,NA,x,x,NA,x,NA,x,x,x,x,x,NA,x,x,NA,x
+Pointy Boys,x,NA,x,x,x,x,NA,x,x,x,x,x,x,NA,x,NA,NA,x,NA,x,x,NA,x,x,x,NA,x,x,NA,x,x,x,NA,x,NA,x,NA
+Eagles,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+Knights,NA,x,NA,x,x,x,NA,NA,x,x,NA,x,NA,x,NA,NA,x,NA,x,NA,x,x,NA,x,NA,NA,x,x,NA,x,x,x,x,x,x,NA,NA
+Scouts,NA,x,NA,x,x,x,x,NA,x,x,NA,x,NA,x,NA,x,x,NA,x,NA,x,x,NA,x,NA,x,x,x,x,x,x,x,x,NA,x,x,NA
+Camels,NA,x,NA,NA,NA,NA,x,NA,x,NA,x,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,x,NA,x,x,NA,x,NA,NA,NA,x,NA,x,NA,NA
+Battle Elephants,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA
+Steppe Lancer,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA
+Siege Ram,x,NA,NA,x,NA,NA,x,x,x,x,x,NA,NA,x,x,NA,NA,NA,x,NA,NA,NA,NA,NA,x,x,x,NA,x,x,x,x,x,x,x,NA,x
+Onager,x,x,x,x,NA,x,NA,x,NA,x,x,x,NA,NA,x,x,NA,x,x,x,NA,x,x,x,NA,x,NA,x,x,x,x,NA,x,x,NA,x,x
+Heavy Scorpion,NA,x,x,x,NA,x,NA,x,x,NA,x,x,NA,NA,x,NA,NA,x,x,NA,NA,x,x,NA,NA,x,NA,NA,NA,x,x,NA,x,x,NA,NA,x
+BBC,NA,x,NA,NA,x,x,x,NA,NA,NA,x,x,x,NA,NA,x,x,NA,NA,x,x,NA,x,x,NA,NA,x,x,x,NA,NA,x,NA,x,x,x,NA
+Monk,x,x,NA,NA,x,x,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,x,NA,NA,x,NA,x,x,NA,NA,NA,x,x,NA,x,x,NA,x,x,NA,NA
+OP Unique Unit,NA,x,x,NA,NA,x,x,NA,x,x,NA,NA,x,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,x,x,NA,NA,NA,NA,NA,x,x,NA,x,x,NA
+Naval,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,x,NA,NA,x,NA,NA,NA,NA,x,x,NA,NA,NA,NA,NA,NA,NA,x
+Structures,NA,NA,NA,x,NA,NA,x,NA,NA,NA,NA,x,NA,NA,x,NA,NA,x,NA,x,NA,NA,NA,NA,NA,NA,x,NA,NA,x,NA,NA,NA,NA,NA,NA,NA
+Food Bonus,x,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,x,NA,NA,NA
+Wood Bonus,NA,NA,x,NA,NA,x,NA,x,NA,NA,NA,x,NA,x,x,NA,NA,x,NA,NA,NA,NA,NA,x,x,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,x,NA
+Gold Bonus,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,x,NA,NA,NA,NA,NA,NA,NA,x,x,NA,NA,x,x,x,NA,x,NA,NA,x,NA,NA
+Early Start Bonus,NA,NA,x,NA,NA,NA,NA,NA,x,x,x,x,x,NA,NA,NA,NA,NA,x,NA,x,NA,x,NA,NA,x,x,NA,NA,NA,NA,NA,x,NA,NA,NA,x
