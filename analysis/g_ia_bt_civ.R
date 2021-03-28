@@ -46,7 +46,7 @@ est <- c(0, coef(mod))
 se <- c(0, sqrt(diag(vcov(mod))))
 
 dat <- tibble(
-    name = c(civ_levels, "ELO Delta (25)"),
+    name = c(civ_levels, "Elo Delta (25)"),
     est = est,
     se = se,
     lci = est - 1.96 * se,
@@ -63,7 +63,7 @@ saveRDS(
 
 
 performance_mid <- dat %>%
-    filter(name != "ELO Delta (25)") %>%
+    filter(name != "Elo Delta (25)") %>%
     pull(est) %>%
     median()
 
@@ -113,7 +113,7 @@ prdat <- readRDS("./data/ia_pr.Rds")
 
 
 prdat2 <- dat %>%
-    filter(name != "ELO Delta (25)") %>%
+    filter(name != "Elo Delta (25)") %>%
     mutate(civ = name) %>% 
     left_join(prdat, by = "civ")
 

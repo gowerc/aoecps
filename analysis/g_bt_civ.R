@@ -20,7 +20,7 @@ dat <- solo %>%
 
 
 ref <- dat %>%
-    filter(name != "ELO Delta (25)") %>%
+    filter(name != "Elo Delta (25)") %>%
     gather(KEY, VAL, -name) %>%
     group_by(KEY) %>%
     summarise(m = median(VAL))

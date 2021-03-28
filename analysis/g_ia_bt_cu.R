@@ -59,7 +59,7 @@ est <- coef(mod)
 se <- sqrt(diag(vcov(mod)))
 
 dat <- tibble(
-    name = c("ELO Delta (25)", colnames(mapdat)[-1]),
+    name = c("Elo Delta (25)", colnames(mapdat)[-1]),
     est = est,
     se = se,
     lci = est - 1.96 * se,

@@ -94,7 +94,7 @@ pdat <- map_df(civlist, get_slice_dat, res2)
 footnotes <- c(
     "Win rates are calculated at each point X after filtering the data to",
     "only include matches where log(x) - 0.1 <= log(x) <= log(x) + 0.1<br/>",
-    "All matches where players ELO is >= 1100 are included.<br/>",
+    "All matches where players Elo is >= 1100 are included.<br/>",
     "All lines have been smoothed using a GAM."
 ) %>%
     as_footnote()
@@ -107,7 +107,7 @@ p <- ggplot(data = pdat, aes(ymin = lci, ymax = uci, x = y, group = civ, fill = 
     scale_x_continuous(breaks = pretty_breaks(4)) +
     geom_hline(yintercept = 0, col = "red", alpha = 0.8) +
     ylab("Win Rate Delta") +
-    xlab("ELO") +
+    xlab("Elo") +
     facet_wrap(~civ) + 
     theme(
         legend.position = "none",

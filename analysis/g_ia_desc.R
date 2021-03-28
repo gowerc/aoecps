@@ -47,7 +47,7 @@ strings <- dat %>%
 
 
 footnotes <- c(
-    "ELO is calculated as the mean of the two players in the match"
+    "Elo is calculated as the mean of the two players in the match"
 ) %>%
     as_footnote()
 
@@ -58,7 +58,7 @@ p <- ggplot(pdat, aes(x = elocat, y = n)) +
     ylab("Count") +
     scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
     scale_x_discrete(expand = expansion(c(0, 0.06))) +
-    xlab("ELO") +
+    xlab("Elo") +
     annotate(
         geom = "text",
         label = strings,

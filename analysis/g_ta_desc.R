@@ -52,7 +52,7 @@ p <- ggplot(pdat, aes(x = elocat, y = p)) +
     ylab("Percentage") +
     scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
     scale_x_discrete(expand = expansion(c(0, 0.06))) +
-    xlab("ELO") +
+    xlab("Elo") +
     annotate(
         geom = "text",
         label = strings,
