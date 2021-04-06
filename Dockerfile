@@ -19,7 +19,10 @@ RUN apt-get update && apt-get install -y \
     vim \
     pandoc \
     libxt-dev\
-    libglpk-dev
+    libglpk-dev\
+    python3-pip
+
+RUN python3 -m pip install snakemake
 
 ## Install postgressql-cleint 13 (to communicate with db from the command line)
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
