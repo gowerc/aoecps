@@ -11,7 +11,8 @@ library(forcats)
 con <- get_connection()
 
 
-meta <- tbl(con, "game_meta") %>% collect()
+meta <- tbl(con, "game_meta") %>%
+    collect()
 
 
 meta_civ <- meta %>% 
@@ -23,25 +24,46 @@ meta_map <- meta %>%
     filter(type == "map_type") %>% 
     select(mversion = version, map_type = id, map_name = string)
 
-
 map_numbers <- meta_map %>%
     filter(map_name == "Arabia") %>%
     pull(map_type)
 
-
 keep_matches <- tbl(con, "match_meta") %>%
     filter(leaderboard_id == 4, ranked) %>%
-    filter(map_type %in% map_numbers) %>% 
+    filter(map_type %in% local(map_numbers)) %>% 
     select(match_id, map_type, version)
-
 
 dat <- tbl(con, "match_players") %>%
     select(match_id, rating, civ, won, slot, team) %>%
     inner_join(keep_matches, by = "match_id") %>% 
     collect()
 
+## Remove games where there are more than 2 teams
+invalid_matches_teams <- dat %>%
+    group_by(match_id) %>%
+    distinct(team) %>%
+    tally() %>%
+    filter(n != 2) %>%
+    ungroup() %>%
+    distinct(match_id)
+
+## Remove games where there is only 1 player in a team
+invalid_matches_players <- dat %>%
+    group_by(match_id, team) %>%
+    tally() %>%
+    filter(n == 1) %>%
+    ungroup() %>%
+    distinct(match_id)
+
+## Remove games where players have missing elo rating
+invalid_matches_rating <- dat %>%
+    filter(is.na(rating)) %>%
+    distinct(match_id)
 
 dat2 <- dat %>%
+    anti_join(invalid_matches_teams, by = "match_id") %>%
+    anti_join(invalid_matches_players, by = "match_id") %>%
+    anti_join(invalid_matches_rating, by = "match_id") %>% 
     mutate(mversion = get_meta_version(started)) %>%
     mutate(version = if_else(is.na(version), "Unknown", version)) %>% 
     left_join(meta_civ, by = c("civ", "mversion")) %>%
@@ -50,11 +72,6 @@ dat2 <- dat %>%
     select(-civ, -map_type, -mversion)
 
 
-no_rating <- dat2 %>%
-    filter(is.na(rating)) %>%
-    pull(match_id) %>%
-    unique()
-
 elo_allow <- dat2 %>%
     group_by(match_id) %>%
     summarise(m = min(rating)) %>%
@@ -62,7 +79,6 @@ elo_allow <- dat2 %>%
 
 
 dat3 <- dat2 %>%
-    filter(!match_id %in% no_rating) %>% 
     mutate(ANLFL = match_id %in% elo_allow$match_id)
 
 

@@ -21,23 +21,24 @@ adat_wide <- adat %>%
     group_by(civ_name, match_id, team) %>%
     tally() %>%
     spread(civ_name, n) %>%
-    ungroup()
+    ungroup() %>% 
+    arrange(match_id)
+
 
 result <- adat %>%
     filter(team == 1) %>%
     arrange(match_id) %>%
     distinct(match_id, won) %>% 
-    pull(won) %>%
-    as.numeric()
+    mutate(won = as.numeric(won)) 
+
 
 elo_delta <- adat %>% 
     group_by(match_id, team) %>% 
     mutate(team = paste0("team", team)) %>% 
-    summarise(melo = mean(rating)) %>% 
+    summarise(melo = mean(rating), .groups = "drop") %>% 
     spread(team, melo) %>% 
     mutate( delo = (team1 - team2)/25) %>% 
-    arrange(match_id) %>% 
-    pull(delo)
+    arrange(match_id) 
 
 replace_na_0 <- function(x) replace_na(x, 0)
 
@@ -52,8 +53,11 @@ team_2 <- sdat %>% filter(team == 2)
 assert_that(
     nrow(team_1) == nrow(team_2),
     all(team_1$match_id %in% team_2$match_id),
-    nrow(team_1) == length(result),
-    nrow(team_1) == length(elo_delta)
+    nrow(team_1) == nrow(result),
+    nrow(team_1) == nrow(elo_delta),
+    all(team_1$match_id == team_2$match_id),
+    all(team_1$match_id == result$match_id),
+    all(team_1$match_id == elo_delta$match_id)
 )
 
 team_1_c <- team_1 %>% select(-match_id, -team)
@@ -65,8 +69,8 @@ team_2_mat <- model.matrix( ~ . -1 , data = team_2_c)
 dmat <- team_1_mat - team_2_mat
 
 mdat <- as_tibble(dmat) %>%
-    mutate( result = result) %>% 
-    mutate( delo = elo_delta) %>% 
+    mutate( result = result$won) %>% 
+    mutate( delo = elo_delta$delo) %>% 
     select(-Vikings)
 
 mod <- glm(

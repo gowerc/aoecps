@@ -1,4 +1,3 @@
-
 pkgload::load_all()
 library(dplyr)
 library(dbplyr)
@@ -9,9 +8,12 @@ library(assertthat)
 library(lubridate)
 library(forcats)
 
+
 con <- get_connection()
 
+
 meta <- tbl(con, "game_meta") %>% collect()
+
 
 meta_civ <- meta %>% 
     filter(type == "civ") %>% 
@@ -29,27 +31,34 @@ keep_matches <- tbl(con, "match_meta") %>%
 
 
 dat <- tbl(con, "match_players") %>%
-    select(match_id, rating, civ, won, slot) %>%
+    select(match_id, rating, civ, won, slot, profile_id) %>%
     inner_join(keep_matches, by = "match_id") %>%
     collect()
 
+
 sum_not_na <- function(x) sum(!is.na(x))
+
+
+valid_players <- dat %>%
+    group_by(match_id) %>%
+    tally() %>%
+    filter(n == 2)
+
 
 valid_rating <- dat %>%
     group_by(match_id) %>%
     summarise(n_na = sum_not_na(rating)) %>% 
-    filter(n_na == 2) %>% 
-    pull(match_id)
-
+    filter(n_na == 2)
 
 
 dat2 <- dat %>%
+    semi_join(valid_players, by = "match_id") %>% 
+    semi_join(valid_rating, by = "match_id") %>% 
     mutate(mversion = get_meta_version(started)) %>%
     left_join(meta_civ, by = c("civ", "mversion")) %>%
     left_join(meta_map, by = c("map_type", "mversion")) %>%
     mutate(version = if_else(is.na(version), "Unknown", version)) %>%
-    filter(map_name == "Arabia") %>%
-    filter(match_id %in% valid_rating)
+    filter(map_name == "Arabia")
 
 
 slot_meta <- dat2 %>%
@@ -63,6 +72,7 @@ slot1 <- dat2 %>%
         s1_rating = rating,
         s1_civ = civ_name,
         s1_won = won,
+        s1_id = profile_id,
         match_id
     )
 
@@ -73,6 +83,7 @@ slot2 <- dat2 %>%
         s2_rating = rating,
         s2_civ = civ_name,
         s2_won = won,
+        s2_id = profile_id,
         match_id
     )
 
@@ -103,10 +114,12 @@ saveRDS(
     file = "./data/ia.Rds"
 )
 
+
 max_date <- tbl(con, "match_meta") %>% 
     summarise(m = max(started, na.rm = TRUE)) %>% 
     pull(m) %>% 
     as_datetime()
+
 
 min_date <- tbl(con, "match_meta") %>% 
     summarise(m = min(started, na.rm = TRUE)) %>% 

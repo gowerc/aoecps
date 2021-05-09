@@ -20,7 +20,8 @@ RUN apt-get update && apt-get install -y \
     pandoc \
     libxt-dev\
     libglpk-dev\
-    python3-pip
+    python3-pip \
+    libicu-dev
 
 RUN python3 -m pip install snakemake
 

@@ -12,3 +12,4 @@ outputs/*
 .gsauth
 !.gitkeep
 .snakemake
+!outputs/report.html

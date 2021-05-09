@@ -1,17 +1,9 @@
 
-
 rule all:
-    input: "outputs/report.html", "data/dbupdate.done"
+    input: 
+        "outputs/report.html"
 
-rule clean:
-    output: touch("data/dbupdate.done")
-    shell:
-        """
-        rm -f data/*
-        rm -f outputs/*
-        """
-
-rule dbupdate:
+rule db:
     shell:
         """
         ./bin/rsql ./analysis/db_init.sql
@@ -19,17 +11,26 @@ rule dbupdate:
         Rscript ./analysis/db_matches.R 
         """
 
+rule clean:
+    shell:
+        """
+        rm -f data/*
+        rm -f outputs/*
+        """
+
 
 ###### VADs
+
 rule:
     output: "data/ta.Rds"
     input: "analysis/ad_ta.R"
     shell: "Rscript {input[0]}"
-    
+
 rule:
     output: "data/ia.Rds"
     input: "analysis/ad_ia.R"
     shell: "Rscript {input[0]}"
+
 
 ###### Bradley Terry outputs
 
@@ -44,7 +45,7 @@ rule ia_bt_cu:
     shell: "Rscript {input[0]}"
 
 rule ta_bt_civ:
-    input: "analysis/g_ta_bt_civ.R", "data/ta.Rds"
+    input: "analysis/g_ta_bt_civ.R", "data/ta.Rds", "data/ta_pr.Rds"
     output: "outputs/g_ta_bt_civ.png", "outputs/g_ta_bt_civ_PR.png"
     shell: "Rscript {input[0]}"
 
@@ -81,7 +82,6 @@ rule i_desc:
         "Rscript {input.prog}"
 
 
-
 #### g_ta Descriptives
 
 rule t_desc:
@@ -96,7 +96,6 @@ rule t_desc:
         prog = "analysis/g_ta_desc.R"
     shell:
         "Rscript {input.prog}"
-
 
 
 ######### Misc Outputs
@@ -116,18 +115,21 @@ rule misc3:
     input: "analysis/g_pr.R", "data/ia_pr.Rds", "data/ta_pr.Rds"
     shell: "Rscript {input[0]}"
 
-OUTPUTS = [
-    rules.misc1.output,
-    rules.misc2.output,
-    rules.misc3.output,
-    rules.i_desc.output,
-    rules.t_desc.output,
-    rules.ia_cvc.output,
-    rules.ia_bt_civ.output,
-    rules.ia_bt_cu.output,
-    rules.ta_bt_civ.output,
-    rules.bt_civ.output
-]
+
+######### Main Report
+
+OUTPUTS = [ i.output for i in [
+    rules.misc1,
+    rules.misc2,
+    rules.misc3,
+    rules.i_desc,
+    rules.t_desc,
+    rules.ia_cvc,
+    rules.ia_bt_civ,
+    rules.ia_bt_cu,
+    rules.ta_bt_civ,
+    rules.bt_civ
+]]
 
 rule report:
     input: "analysis/report.Rmd", OUTPUTS
@@ -142,4 +144,5 @@ rule report:
                 output_file = 'report.html'
             )"
         """
+
 
