@@ -15,6 +15,9 @@ Instructions to re-run the analysis
 - Build the database by running `snakemake -j1 db`
 - Remove prior analysis files via snakemake -j1 clean`
 - Re-run the analysis via `snakemake -j1 all` 
-- Finally once done close the containers via `docker-compose down`
+
+Finally once done we can clean up by:
+- exiting the analytic container by running `exit`
+- closing down the containers via running `docker-compose down`
 
 
