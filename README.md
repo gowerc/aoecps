@@ -13,7 +13,7 @@ Instructions to re-run the analysis
 - Enable the containers by running `docker-compose up -d`
 - Enter the analytic container via `docker-compose exec analysis bash`
 - Build the database by running `snakemake -j1 db`
-- Remove prior analysis files via snakemake -j1 clean`
+- Remove prior analysis files via `snakemake -j1 clean`
 - Re-run the analysis via `snakemake -j1 all` 
 
 Finally once done we can clean up by:
