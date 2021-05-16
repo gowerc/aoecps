@@ -7,20 +7,20 @@ import datetime
 def db_insert_into(data, db_name):
     db_vars = dbmeta[db_name]["variables"].keys()
     db_keys = dbmeta[db_name]["keys"]
-
+    
     insert_query_template = """\
     INSERT INTO {TABLE} ({VARIABLES})
     VALUES ({VALUES})
     ON CONFLICT ({KEYS}) DO NOTHING;
     """
-
+    
     insert_query = insert_query_template.format(
         TABLE=db_name,
         VARIABLES=", ".join(db_vars),
         VALUES=", ".join(["%s" for i in db_vars]),
         KEYS=", ".join(db_keys)
     )
-
+    
     for row in data:
         record_to_insert = [row[var] for var in db_vars]
         cur.execute(insert_query, record_to_insert)
@@ -63,7 +63,7 @@ def db_create_table_if_not(db_name):
         {CONSTRAINTS}
     );
     """
-
+    
     constraint_template = """
     ,CONSTRAINT {CONSTRAINT_NAME} {CONSTRAINT}
     """
@@ -134,6 +134,12 @@ def as_seconds(dt):
 
 
 def db_get_latest():
+    query = "SELECT count(started) as count from public.match_meta;"
+    cur.execute(query)
+    ret = cur.fetchall()
+    count = ret[0][0]
+    if count == 0:
+        return DEFAULT_TIME
     query = "SELECT max(started) from public.match_meta;"
     cur.execute(query)
     ret = cur.fetchall()
@@ -161,6 +167,15 @@ def add_to_db(dt):
     
     conn.commit()
 
+
+DEFAULT_TIME = as_seconds(datetime.datetime(
+    year=2021,
+    month=1,
+    day=28,
+    hour=12,
+    minute=30,
+    second=30
+))
 
 if __name__ == "__main__":
     
