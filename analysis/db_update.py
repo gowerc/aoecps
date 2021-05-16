@@ -168,6 +168,8 @@ def add_to_db(dt):
     conn.commit()
 
 
+# Release date for lords of the west
+# First metadata set is based on this release
 DEFAULT_TIME = as_seconds(datetime.datetime(
     year=2021,
     month=1,
