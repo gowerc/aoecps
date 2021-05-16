@@ -11,8 +11,7 @@ library(forcats)
 con <- get_connection()
 
 
-meta <- tbl(con, "game_meta") %>%
-    collect()
+meta <- get_game_meta()
 
 
 meta_civ <- meta %>% 

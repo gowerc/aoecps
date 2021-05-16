@@ -6,9 +6,7 @@ rule all:
 rule db:
     shell:
         """
-        ./bin/rsql ./analysis/db_init.sql
-        Rscript ./analysis/db_game_meta.R
-        Rscript ./analysis/db_matches.R 
+        python3 ./analysis/db_update.py
         """
 
 rule clean:
@@ -35,8 +33,8 @@ rule:
 ###### Bradley Terry outputs
 
 rule ia_bt_civ:
+    output: "outputs/g_ia_bt_civ.png", "outputs/g_ia_bt_civ_PR.png" 
     input: "analysis/g_ia_bt_civ.R", "data/ia.Rds"
-    output: "outputs/g_ia_bt_civ.png", "outputs/g_ia_bt_civ_PR.png"
     shell: "Rscript {input[0]}"
 
 rule ia_bt_cu:
@@ -45,13 +43,13 @@ rule ia_bt_cu:
     shell: "Rscript {input[0]}"
 
 rule ta_bt_civ:
-    input: "analysis/g_ta_bt_civ.R", "data/ta.Rds", "data/ta_pr.Rds"
     output: "outputs/g_ta_bt_civ.png", "outputs/g_ta_bt_civ_PR.png"
+    input: "analysis/g_ta_bt_civ.R", "data/ta.Rds", "data/ta_pr.Rds"
     shell: "Rscript {input[0]}"
 
 rule bt_civ:
-    input: "analysis/g_bt_civ.R", "outputs/g_ia_bt_civ.png", "outputs/g_ta_bt_civ.png"
     output: "outputs/g_bt_civ.png"
+    input: "analysis/g_bt_civ.R", "outputs/g_ia_bt_civ.png", "outputs/g_ta_bt_civ.png"
     shell: "Rscript {input[0]}"
 
 

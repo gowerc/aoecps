@@ -1,7 +1,6 @@
 
 #' @import DBI
 #' @import RPostgres
-
 #' @export
 get_connection <- function() {
     DBI::dbConnect(
@@ -13,3 +12,23 @@ get_connection <- function() {
         password = Sys.getenv("APP_PASSWORD")
     )
 }
+
+
+#' @importFrom jsonlite read_json
+#' @import tibble
+#' @importFrom purrr map_df
+#' @export
+get_game_meta <- function(){
+    x <- read_json("./data-raw/db_meta.json")
+    map_df(names(x), function(i){
+        tibble(
+            version = i,
+            string = unlist(x[[i]]$string),
+            id = unlist(x[[i]]$id),
+            type = unlist(x[[i]]$type)
+        )
+    })
+}
+
+
+

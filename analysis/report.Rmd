@@ -58,9 +58,9 @@ For Team Games:
 
 ### Confidence Intervals and why they are Important
 
-Before going any further this is a key topic I want to touch on and is also part of the motivation as to why I have made this report. A common critique you wil hear when talking about AOE2 statistics is "you can't trust that value, the sample size is too small!". A natural question is then "well how much of a sample size do we need?" or better put "how much should we trust this number". This is where confidence intervals come in.
+Before going any further a key topic I want to touch on is that of confidence intervals. A common critique you wil hear when talking about AOE2 statistics is "you can't trust that value, the sample size is too small!". A natural question is then "well how much of a sample size do we need?" or the equivanelt question of "how much should we trust this number". This is where confidence intervals come in.
 
-The general purpose of a confidence interval is to give us an idea of how much we  trust we should place in a statistic. The naive explanation is that a 95% confidence interval is the range of values in which there is a 95% chance that the true value that we are trying to estimate lies in. In short, wide confidence intervals mean we should have less trust in our estimates whilst narrower confidence intervals mean we should have more trust in our estimate.
+The general purpose of a confidence interval is to give an idea of how much we  trust we should place in a statistic. The naive explanation is that a 95% confidence interval is the range of values in which there is a 95% chance that the true value that we are trying to estimate lies in. In short, wide confidence intervals mean we should have less trust in our estimates whilst narrow confidence intervals mean we should have more trust in our estimate.
 
 
 ## Descriptives
