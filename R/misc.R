@@ -1,9 +1,11 @@
 #' @import dplyr
 
-#' @export 
-get_meta_version <- function(started){
+#' @export
+get_meta_version <- function(start_dt){
     case_when(
-        TRUE ~ "A"
+        start_dt <= ymd_hms("2021-8-09T00-00-00") ~ "A",
+        start_dt >= ymd_hms("2021-8-11T00-00-00") ~ "B",
+        TRUE ~ "ZZZ"
     )
 }
 
@@ -43,3 +45,11 @@ save_plot <- function(plot, filename, height = 5.5 , width = 8, ...){
     )
 }
 
+#' @export
+get_map_class <- function(){
+    x <- yaml::read_yaml("./data-raw/map_class.yml")
+    tibble(
+        map_name = names(unlist(x)),
+        map_class = unlist(x)
+    )
+}

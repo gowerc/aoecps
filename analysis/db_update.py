@@ -172,11 +172,11 @@ def add_to_db(dt):
 # First metadata set is based on this release
 DEFAULT_TIME = as_seconds(datetime.datetime(
     year=2021,
-    month=1,
-    day=28,
-    hour=12,
-    minute=30,
-    second=30
+    month=8,
+    day=11,
+    hour=1,
+    minute=00,
+    second=00
 ))
 
 if __name__ == "__main__":

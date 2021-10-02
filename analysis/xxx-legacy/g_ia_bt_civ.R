@@ -17,24 +17,30 @@ civ_levels <- adat %>%
     fct_relevel("Vikings") %>%
     levels()
 
+
 adat2 <- adat %>%
     mutate(s1_civ = factor(s1_civ, levels = civ_levels)) %>%
     mutate(s2_civ = factor(s2_civ, levels = civ_levels)) %>%
     mutate(s1_rating = s1_rating / 25) %>%
     mutate(s2_rating = s2_rating / 25)
 
+
 team_a_mat <- model.matrix(~ s1_civ + s1_rating, data = adat2)[,-1]
 team_b_mat <- model.matrix(~ s2_civ + s2_rating, data = adat2)[,-1]
+
 
 stopifnot(
     nrow(team_a_mat) == nrow(team_b_mat),
     ncol(team_a_mat) == ncol(team_b_mat)
 )
 
+
 diff_mat <- team_a_mat - team_b_mat
 
+
 mdat <- as_tibble(diff_mat) %>%
-    mutate( result = adat2$s1_won) 
+    mutate( result = adat2$s1_won)
+
 
 mod <- glm(
     family = binomial(),
@@ -42,8 +48,10 @@ mod <- glm(
     data = mdat
 )
 
+
 est <- c(0, coef(mod))
 se <- c(0, sqrt(diag(vcov(mod))))
+
 
 dat <- tibble(
     name = c(civ_levels, "Elo Delta (25)"),
@@ -54,6 +62,7 @@ dat <- tibble(
 ) %>%
     arrange(desc(est)) %>%
     mutate(name = fct_inorder(name))
+
 
 saveRDS(
     object = dat, 

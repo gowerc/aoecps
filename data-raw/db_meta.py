@@ -1,7 +1,7 @@
 import requests
 import json
 
-VERSION = "A"
+VERSION = "B"
 
 
 def api_get_meta(game="aoe2de", language="en"):

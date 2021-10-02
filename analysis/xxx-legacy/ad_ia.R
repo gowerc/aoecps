@@ -15,25 +15,32 @@ con <- get_connection()
 meta <- get_game_meta()
 
 
-meta_civ <- meta %>% 
-    filter(type == "civ") %>% 
+meta_civ <- meta %>%
+    filter(type == "civ") %>%
     select(mversion = version, civ = id, civ_name = string)
 
 
-meta_map <- meta %>% 
+meta_map <- meta %>%
     filter(type == "map_type") %>% 
     select(mversion = version, map_type = id, map_name = string)
 
+meta_board <- meta %>%
+    filter(type == "leaderboard") %>% 
+    select(mversion = version, leaderboard_id = id, leaderboard_name = string)
+
 
 keep_matches <- tbl(con, "match_meta") %>%
-    filter(leaderboard_id == 3, ranked) %>%
-    select(match_id, map_type, version)
+    filter(leaderboard_id %in% c(3, 13), ranked) %>%
+    select(match_id, map_type, version, started, leaderboard_id)
+
 
 
 dat <- tbl(con, "match_players") %>%
     select(match_id, rating, civ, won, slot, profile_id) %>%
     inner_join(keep_matches, by = "match_id") %>%
-    collect()
+    collect() %>%
+    mutate(start_dt = ymd("1970-01-01") + seconds(started)) %>%
+    select(-started)
 
 
 sum_not_na <- function(x) sum(!is.na(x))
@@ -47,23 +54,23 @@ valid_players <- dat %>%
 
 valid_rating <- dat %>%
     group_by(match_id) %>%
-    summarise(n_na = sum_not_na(rating)) %>% 
+    summarise(n_na = sum_not_na(rating)) %>%
     filter(n_na == 2)
 
 
 dat2 <- dat %>%
     semi_join(valid_players, by = "match_id") %>% 
     semi_join(valid_rating, by = "match_id") %>% 
-    mutate(mversion = get_meta_version(started)) %>%
+    mutate(mversion = get_meta_version(start_dt)) %>%
     left_join(meta_civ, by = c("civ", "mversion")) %>%
     left_join(meta_map, by = c("map_type", "mversion")) %>%
-    mutate(version = if_else(is.na(version), "Unknown", version)) %>%
-    filter(map_name == "Arabia")
+    left_join(meta_board, by = c("leaderboard_id", "mversion")) %>%
+    mutate(version = if_else(is.na(version), "Unknown", version))
 
 
 slot_meta <- dat2 %>%
     filter(slot == 1) %>%
-    select(match_id, map_name, version)
+    select(match_id, map_name, version, start_dt, leaderboard_name)
 
 
 slot1 <- dat2 %>%
@@ -91,10 +98,7 @@ slot2 <- dat2 %>%
 adat <- slot1 %>%
     inner_join(slot2, by = "match_id") %>%
     left_join(slot_meta, by = "match_id") %>%
-    mutate(
-        delo = (s1_rating - s2_rating) / 25,
-        p1_result = as.numeric(s1_won)
-    )
+    mutate(p1_result = as.numeric(s1_won))
 
 
 assert_that(
@@ -103,38 +107,13 @@ assert_that(
 )
 
 
-adat2 <- adat %>% 
-    filter(s1_civ != s2_civ)  %>%
-    filter(!is.na(s1_rating) & !is.na(s2_rating)) %>% 
-    mutate(ANLFL = s1_rating >= 1200 & s2_rating >= 1200)
+adat2 <- adat %>%
+    filter(s1_civ != s2_civ) %>%
+    filter(!is.na(s1_rating) & !is.na(s2_rating))
 
 
 saveRDS(
     object = adat2,
-    file = "./data/ia.Rds"
+    file = "./data/ad_indiv.Rds"
 )
 
-
-max_date <- tbl(con, "match_meta") %>% 
-    summarise(m = max(started, na.rm = TRUE)) %>% 
-    pull(m) %>% 
-    as_datetime()
-
-
-min_date <- tbl(con, "match_meta") %>% 
-    summarise(m = min(started, na.rm = TRUE)) %>% 
-    pull(m) %>% 
-    as_datetime()
-    
-solo_meta <- list(
-    db_min = min_date,
-    db_max = max_date,
-    n_db = as.numeric(tbl(con, "match_meta") %>% tally() %>% pull(n)),
-    n_solo = as.numeric(tbl(con, "match_meta") %>% filter(leaderboard_id == 3, ranked) %>% tally() %>% pull(n)),
-    n_valid_solo = adat2 %>% filter(ANLFL) %>% distinct(match_id) %>% nrow()
-)
-
-saveRDS(
-    object = solo_meta, 
-    file = "./data/ia_meta.Rds"
-)

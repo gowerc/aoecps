@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.0.3
+FROM rocker/r-ver:4.1.1
 
 ## Required system dependencies
 RUN apt-get update && apt-get install -y \
@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
     libxt-dev\
     libglpk-dev\
     python3-pip \
-    libicu-dev
+    libicu-dev \
+    htop
 
 RUN python3 -m pip install snakemake
 
@@ -31,8 +32,8 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg ma
 RUN apt-get update && apt-get -y install postgresql-client-13
 
 
-# Fix Rstudio package manager to use a specific date cutoff  (20th January 2021)
-RUN sed -i "s/focal\/latest/focal\/908360/g" /usr/local/lib/R/etc/Rprofile.site
+# Fix Rstudio package manager to use a specific date cutoff
+RUN sed -i "s/latest/2021-09-14\+Y3JhbiwyOjQ1MjYyMTU7MjQ1QUQ0RA/g" /usr/local/lib/R/etc/Rprofile.site
 
 # Install required libraries
 RUN Rscript -e "options(warn=2);\
@@ -60,8 +61,12 @@ RUN Rscript -e "options(warn=2);\
         'jsonlite',\
         'kableExtra',\
         'ggrepel',\
-        'googlesheets4'\
+        'googlesheets4',\
+        'mvtnorm'\
     ))"
+
+COPY requirements.txt /
+RUN python3 -m pip install -r /requirements.txt
 
 RUN mkdir /app
 WORKDIR /app

@@ -17,6 +17,12 @@ rule clean:
         """
 
 
+rule killr:
+    shell:
+        """
+        kill -9 $(ps -u root | awk '$4=="R" {{ printf "%s ", $1 }}')
+        """
+
 ###### VADs
 
 rule:

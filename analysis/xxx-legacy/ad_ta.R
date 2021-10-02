@@ -23,19 +23,25 @@ meta_map <- meta %>%
     filter(type == "map_type") %>% 
     select(mversion = version, map_type = id, map_name = string)
 
+
 map_numbers <- meta_map %>%
     filter(map_name == "Arabia") %>%
     pull(map_type)
 
+
 keep_matches <- tbl(con, "match_meta") %>%
     filter(leaderboard_id == 4, ranked) %>%
-    filter(map_type %in% local(map_numbers)) %>% 
-    select(match_id, map_type, version)
+    filter(map_type %in% local(map_numbers)) %>%
+    select(match_id, map_type, version, started)
+
 
 dat <- tbl(con, "match_players") %>%
     select(match_id, rating, civ, won, slot, team) %>%
-    inner_join(keep_matches, by = "match_id") %>% 
-    collect()
+    inner_join(keep_matches, by = "match_id") %>%
+    collect() %>%
+    mutate(start_dt = ymd("1970-01-01") + seconds(started)) %>%
+    select(-started)
+
 
 ## Remove games where there are more than 2 teams
 invalid_matches_teams <- dat %>%
@@ -46,6 +52,7 @@ invalid_matches_teams <- dat %>%
     ungroup() %>%
     distinct(match_id)
 
+
 ## Remove games where there is only 1 player in a team
 invalid_matches_players <- dat %>%
     group_by(match_id, team) %>%
@@ -54,16 +61,18 @@ invalid_matches_players <- dat %>%
     ungroup() %>%
     distinct(match_id)
 
+
 ## Remove games where players have missing elo rating
 invalid_matches_rating <- dat %>%
     filter(is.na(rating)) %>%
     distinct(match_id)
 
+
 dat2 <- dat %>%
     anti_join(invalid_matches_teams, by = "match_id") %>%
     anti_join(invalid_matches_players, by = "match_id") %>%
     anti_join(invalid_matches_rating, by = "match_id") %>% 
-    mutate(mversion = get_meta_version(started)) %>%
+    mutate(mversion = get_meta_version(start_dt)) %>%
     mutate(version = if_else(is.na(version), "Unknown", version)) %>% 
     left_join(meta_civ, by = c("civ", "mversion")) %>%
     left_join(meta_map, by = c("map_type", "mversion")) %>%
@@ -78,7 +87,7 @@ elo_allow <- dat2 %>%
 
 
 dat3 <- dat2 %>%
-    mutate(ANLFL = match_id %in% elo_allow$match_id)
+    mutate(ANLFL = match_id %in% elo_allow$match_id & start_dt >= LOWER_CUTOFF)
 
 
 saveRDS(
@@ -92,6 +101,7 @@ team_meta <- list(
     n_team = as.numeric(tbl(con, "match_meta") %>% filter(leaderboard_id == 4, ranked) %>% tally() %>% pull(n)),
     n_valid_team = dat3 %>% filter(ANLFL) %>% distinct(match_id) %>% nrow()
 )
+
 
 saveRDS(
     object = team_meta, 
