@@ -1,6 +1,6 @@
 # aoecps
 
-Small project to analyse AOE2 civilisation performance statistics in order to identify any evidence of game imbalance
+Small project to calculate AOE2 civilisation performance statistics
 
 ## Build Instructions
 
@@ -12,7 +12,7 @@ Instructions to re-run the analysis
 - Build the images by running `docker-compose build`
 - Enable the containers by running `docker-compose up -d`
 - Enter the analytic container via `docker-compose exec analysis bash`
-- Build the database by running `snakemake -j1 db`
+- Build the database by running `snakemake -j1 db` (this will take a long time to run)
 - Remove prior analysis files via `snakemake -j1 clean`
 - Re-run the analysis via `snakemake -j1 all` 
 

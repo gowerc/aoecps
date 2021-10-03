@@ -1,7 +1,15 @@
 
 rule all:
-    input: 
-        "outputs/report.html"
+    input:
+        "outputs/index.html",
+        "outputs/report_A.html",
+        "outputs/report_B.html",
+        "outputs/report_C.html",
+        "outputs/report_D.html",
+        "outputs/report_E.html",
+        "outputs/report_F.html"
+
+
 
 rule db:
     shell:
@@ -17,121 +25,25 @@ rule clean:
         """
 
 
+rule killr:
+    shell:
+        """
+        kill -9 $(ps -u root | awk '$4=="R" {{ printf "%s ", $1 }}')
+        """
+
 ###### VADs
 
 rule:
-    output: "data/ta.Rds"
-    input: "analysis/ad_ta.R"
+    output: "data/ad_matchmeta.Rds"
+    input: "analysis/ad_ana.R"
     shell: "Rscript {input[0]}"
+
+
+###### Report
 
 rule:
-    output: "data/ia.Rds"
-    input: "analysis/ad_ia.R"
-    shell: "Rscript {input[0]}"
-
-
-###### Bradley Terry outputs
-
-rule ia_bt_civ:
-    output: "outputs/g_ia_bt_civ.png", "outputs/g_ia_bt_civ_PR.png" 
-    input: "analysis/g_ia_bt_civ.R", "data/ia.Rds"
-    shell: "Rscript {input[0]}"
-
-rule ia_bt_cu:
-    output: "outputs/g_ia_bt_cu.png"
-    input: "analysis/g_ia_bt_cu.R", "data/ia.Rds", "data-raw/civ_unit_map.csv"
-    shell: "Rscript {input[0]}"
-
-rule ta_bt_civ:
-    output: "outputs/g_ta_bt_civ.png", "outputs/g_ta_bt_civ_PR.png"
-    input: "analysis/g_ta_bt_civ.R", "data/ta.Rds", "data/ta_pr.Rds"
-    shell: "Rscript {input[0]}"
-
-rule bt_civ:
-    output: "outputs/g_bt_civ.png"
-    input: "analysis/g_bt_civ.R", "outputs/g_ia_bt_civ.png", "outputs/g_ta_bt_civ.png"
-    shell: "Rscript {input[0]}"
-
-
-#### Civ v Civ collection
-rule ia_cvc:
-    output:
-        "outputs/g_ia_cvc_civs_meta.Rds",
-        "outputs/t_ia_cvc_opt.Rds",
-        "outputs/g_ia_cvc_clust.png"
-    input:
-        "analysis/g_ia_cvc.R",
-        "data/ia.Rds"
-    shell: "Rscript {input[0]}"
-
-
-#### g_ia Descriptives
-rule i_desc:
-    output:
-        "outputs/g_ia_desc_ELODIST.png",
-        "outputs/g_ia_desc_PR.png",
-        "outputs/g_ia_desc_VERDIST.png",
-        "outputs/g_ia_desc_WR.png",
-        "data/ia_pr.Rds"
-    input:
-        "data/ia.Rds",
-        prog = "analysis/g_ia_desc.R"
-    shell:
-        "Rscript {input.prog}"
-
-
-#### g_ta Descriptives
-
-rule t_desc:
-    output:
-        "outputs/g_ta_desc_ELODIST.png",
-        "outputs/g_ta_desc_PR.png",
-        "outputs/g_ta_desc_VERDIST.png",
-        "outputs/g_ta_desc_WR.png",
-        "data/ta_pr.Rds"
-    input:
-        "data/ta.Rds",
-        prog = "analysis/g_ta_desc.R"
-    shell:
-        "Rscript {input.prog}"
-
-
-######### Misc Outputs
-
-rule misc1:
-    output: "outputs/g_ia_slice.png"
-    input: "analysis/g_ia_slice.R", "data/ia.Rds"
-    shell: "Rscript {input[0]}"
-
-rule misc2:
-    output: "outputs/g_ta_slice.png"
-    input: "analysis/g_ta_slice.R", "data/ta.Rds"
-    shell: "Rscript {input[0]}"
-
-rule misc3:
-    output: "outputs/g_pr.png"
-    input: "analysis/g_pr.R", "data/ia_pr.Rds", "data/ta_pr.Rds"
-    shell: "Rscript {input[0]}"
-
-
-######### Main Report
-
-OUTPUTS = [ i.output for i in [
-    rules.misc1,
-    rules.misc2,
-    rules.misc3,
-    rules.i_desc,
-    rules.t_desc,
-    rules.ia_cvc,
-    rules.ia_bt_civ,
-    rules.ia_bt_cu,
-    rules.ta_bt_civ,
-    rules.bt_civ
-]]
-
-rule report:
-    input: "analysis/report.Rmd", OUTPUTS
-    output: "outputs/report.html"
+    input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
+    output: "outputs/report_A.html"
     shell:
         """
         Rscript -e "
@@ -139,8 +51,137 @@ rule report:
                 input = '{input[0]}',
                 knit_root_dir = '/app',
                 output_dir = './outputs',
-                output_file = 'report.html'
+                output_file = 'report_A.html',
+                params = list(
+                    lower_elo = 1200,
+                    lower_elo_slice = 800,
+                    mapclass = 'Open',
+                    leaderboard = '1v1 Random Map',
+                    lower_dt = lubridate::ymd_hms('2021-08-25 01:00:00')
+                )
             )"
         """
 
 
+rule:
+    input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
+    output: "outputs/report_B.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'report_B.html',
+                params = list(
+                    lower_elo = 1200,
+                    lower_elo_slice = 800,
+                    mapclass = 'Closed',
+                    leaderboard = '1v1 Random Map',
+                    lower_dt = lubridate::ymd_hms('2021-08-25 01:00:00')
+                )
+            )"
+        """
+
+
+rule:
+    input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
+    output: "outputs/report_C.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'report_C.html',
+                params = list(
+                    lower_elo = 2000,
+                    lower_elo_slice = 1500,
+                    mapclass = 'Open',
+                    leaderboard = 'Team Random Map',
+                    lower_dt = lubridate::ymd_hms('2021-08-25 01:00:00')
+                )
+            )"
+        """
+
+
+rule:
+    input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
+    output: "outputs/report_D.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'report_D.html',
+                params = list(
+                    lower_elo = 2000,
+                    lower_elo_slice = 1500,
+                    mapclass = 'Closed',
+                    leaderboard = 'Team Random Map',
+                    lower_dt = lubridate::ymd_hms('2021-08-25 01:00:00')
+                )
+            )"
+        """
+
+
+rule:
+    input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
+    output: "outputs/report_E.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'report_E.html',
+                params = list(
+                    lower_elo = 1100,
+                    lower_elo_slice = 800,
+                    mapclass = 'Any',
+                    leaderboard = '1v1 Empire Wars',
+                    lower_dt = lubridate::ymd_hms('2021-08-25 01:00:00')
+                )
+            )"
+        """
+
+
+rule:
+    input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
+    output: "outputs/report_F.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'report_F.html',
+                params = list(
+                    lower_elo = 1100,
+                    lower_elo_slice = 800,
+                    mapclass = 'Any',
+                    leaderboard = 'Team Empire Wars',
+                    lower_dt = lubridate::ymd_hms('2021-08-25 01:00:00')
+                )
+            )"
+        """
+
+rule:
+    input: "analysis/index.Rmd"
+    output: "outputs/index.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'index.html'
+            )"
+        """

@@ -1,6 +1,12 @@
 ---
 title: Age of Empires 2 Civilisation Performance Statistics
 date: "`r format(Sys.time(), '%d %b %Y')`"
+params:
+    lower_elo: NULL
+    lower_elo_slice: NULL
+    mapclass: NULL
+    leaderboard: NULL
+    lower_dt: NULL
 output:
     html_document:
         theme: cerulean
@@ -11,274 +17,173 @@ output:
             in_header: www/header.html
 ---
 
-```{r, echo=FALSE, results=FALSE, message=FALSE}
-pkgload::load_all()
-library(dbplyr)
+
+```{r, echo = FALSE, eval = FALSE, message = FALSE}
+params <- list(
+    lower_elo = 1200,
+    lower_elo_slice = 900,
+    mapclass = "Open",
+    leaderboard = "1v1 Random Map",
+    lower_dt = lubridate::ymd_hms("2021-08-20 01:00:00")
+)
+```
+
+
+```{r, setup, echo = FALSE, results = FALSE, message = FALSE}
+
+
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    collapse = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    comment = "#>",
+    fig.retina = 2, # Control using dpi
+    fig.width = 9,
+    fig.height = 9 * 5/8, 
+    out.height= "500px", 
+    out.width="800px",
+    fig.pos = "t",  # pdf mode
+    fig.align = "center",
+    dpi = if (knitr::is_latex_output()) 72 else 300, 
+    out.width = "100%",
+    dev = "svg",
+    dev.args = list(png = list(type = "cairo-png")),
+    optipng = "-o1 -quiet"
+)
+
+
+knitr::opts_template$set(square = list(
+    fig.width = 9,
+    fig.height = 9, 
+    out.height = "700px", 
+    out.width ="700px"
+))
+
+
+devtools::load_all()
 library(dplyr)
 library(ggplot2)
+library(scales)
+library(tidyr)
 library(lubridate)
-library(kableExtra)
 
-meta_solo <- readRDS("./data/ia_meta.Rds")
-meta_team <- readRDS("./data/ta_meta.Rds")
 
-n_db <- prettyNum(meta_solo$n_db, big.mark = ",", scientific = FALSE)
-db_min <- as.Date(meta_solo$db_min)
-db_max <- as.Date(meta_solo$db_max)
-n_valid_solo <- prettyNum(meta_solo$n_valid_solo, big.mark = ",", scientific = FALSE)
-n_valid_team <- prettyNum(meta_team$n_valid_team,big.mark=",",scientific=FALSE)
+players <- readRDS("./data/ad_players.Rds")
+pre_matchmeta <- readRDS("./data/ad_matchmeta.Rds")
+
+matchmeta <- pre_matchmeta %>%
+    filter(
+        start_dt >= params$lower_dt,
+        rating_min >= params$lower_elo,
+        leaderboard_name == params$leaderboard
+    )
+
+if (params$mapclass != "Any") {
+    matchmeta <- matchmeta %>% filter(map_class == params$mapclass)
+}
+
+
+matchmeta_slice <- pre_matchmeta %>%
+    filter(
+        start_dt >= params$lower_dt,
+        rating_min >= params$lower_elo_slice,
+        leaderboard_name == params$leaderboard
+    )
+
+if (params$mapclass != "Any") {
+    matchmeta_slice <- matchmeta_slice %>% filter(map_class == params$mapclass)
+}
 ```
+
 
 ## Introduction
 
-This report attempts to outline civilisation performance statistics in order to
-try and identify areas of imbalance within the game as well as stimulate meaningful debate. 
-The analysis is based on `r n_db` matches recorded between `r db_min` and `r db_max`. Big thank 
-you to https://aoe2.net/ for making the data available and accessible. Unless otherwise stated, all outputs are based upon a subset of this data created
-by the following filters:
+This document was built by filtering the data based on the following criteria:
 
-For Solo Games (i.e. 1v1s):
+- Leaderboard = **`r params$leaderboard`**
+- Matches started between **`r as.Date(params$lower_dt)`** and **`r as.Date(max(matchmeta$start_dt))`**
+- Matches have a map classification of "**`r params$mapclass`**"
+- The lowest Elo player in the match has an Elo greater than **`r params$lower_elo`**
 
-- Match took place in the ranked 1v1 ladder
-- Match has a known result 
-- Both players have a known Elo > 1200
-- Match was played on Arabia
-- Both players are using different civilisations
-
-For Team Games:
-
-- Match took place in the ranked 2v2, 3v3 or 4v4 ladder
-- Match has a known result 
-- All players have a known Elo with the lowest player in the match having an Elo > 1400
-- Match was played on Arabia
-
- In total there were `r n_valid_solo` matches that met the solo game criteria and `r n_valid_team` matches that met the team game criteria. Outputs will have a "Solo Games" or 
- "Team Games" tag to indicate which subset of the data they are based on. 
-
-
-### Confidence Intervals and why they are Important
-
-Before going any further a key topic I want to touch on is that of confidence intervals. A common critique you wil hear when talking about AOE2 statistics is "you can't trust that value, the sample size is too small!". A natural question is then "well how much of a sample size do we need?" or the equivanelt question of "how much should we trust this number". This is where confidence intervals come in.
-
-The general purpose of a confidence interval is to give an idea of how much we  trust we should place in a statistic. The naive explanation is that a 95% confidence interval is the range of values in which there is a 95% chance that the true value that we are trying to estimate lies in. In short, wide confidence intervals mean we should have less trust in our estimates whilst narrow confidence intervals mean we should have more trust in our estimate.
-
+Please note that for the "Win rate by Elo" plot, all matches that have the
+lowest Elo player in the     match having an Elo greater **`r params$lower_elo_slice`** have been included.
 
 ## Descriptives
 
-This section provides a general overview of the data used providing information on such things as distribution of player Elo as well as civilisation utilisation and patch distributions. 
+### Matches Played by Patch
 
-### Number of Matches per Patch (Solo Games)
-<img src="../outputs/g_ia_desc_VERDIST.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
+```{r, desc_patch}
+plot_dist_patch(matchmeta)
+```
 
-### Summary of Elo Distribution (Solo Games)
-<img src="../outputs/g_ia_desc_ELODIST.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Play Rate by Civilisation (Solo Games)
-<img src="../outputs/g_ia_desc_PR.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Number of Matches per Patch (Team Games)
-<img src="../outputs/g_ta_desc_VERDIST.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Summary of Elo Distribution (Team Games)
-<img src="../outputs/g_ta_desc_ELODIST.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Play Rate by Civilisation (Team Games)
-<img src="../outputs/g_ta_desc_PR.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Play Rate by Civilisation - log scale (Solo vs Team Games)
-<img src="../outputs/g_pr.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-
-
-## Bradley-Terry Modeling  
-  
-  
-To assess civilisation performance, a Bradley-Terry model was fitted to the data. This model works by assuming that each civilisation has a latent (i.e. hidden/unknown) performance rating.
-The model then assumes that the probability of one civilisation beating another can be calculated based upon the difference between the two civilisations performance ratings.
-More formally the model used in this analysis (for solo games) assumes that the probability of civilisation $i$ beating civilisation $j$ in match $k$ can be calculated as:
-  
-$$
-\frac{1}{1+e^{-\lambda_{ijk}}}
-$$  
-  
-where:
-  
-- $\lambda_{ijk} = X_i - X_j + D_k$  
-- $X_i$ is the performance score for civilisation $i$  
-- $X_j$ is the performance score for civilisation $j$  
-- $D_k$ is the difference in Elo rating between the two players in match $k$ divided by 25  
-  
-  
-For the maths of the model to work a reference civilisation needs to be defined. For this analysis the Vikings were chosen. This means that the performance score of the Vikings is fixed at 0 and all that all other civilisations performance scores represent the difference from Vikings (please note that this selection is arbitrary and makes no difference on interpretation of the results).
-
-So what do these performance numbers actually mean? Well the best way to interpret them is to plug them back into the above formula. For example, let's say civilisation A has a score of $0.24$ whilst civilisation B has a value of $-0.13$. Using the above formula (assuming no Elo difference between the two players) results in:
-$$
-\frac{1}{1+e^{-(0.24 - (-0.13))}} = \frac{1}{1+e^{-0.37}} = 0.591
-$$
-
-That is to say our model predicts that, given there is no difference in Elo between the two players, there is a 59.1% chance that civilisation A would beat civilisation B in a 1v1 game on Arabia. For reference the following table provides a mapping from the difference in performance score to the expected win percentage:
-
-```{r, results="asis", echo=FALSE}
-logistic <- function(x)  1 / (1 + exp(-x))
-dat <- tibble(
-    x = seq(0.4, -0.4, by = -0.1),
-    y = paste0(round(logistic(x) * 100, 2), "%")
-) %>%
-    select(
-        `Difference in Performance Score` = x,
-        `Expected Win Percentage` = y
-    )
-
-
-kable(dat, align = "cc", "html") %>%
-    kable_styling(full_width = F)
-
+### Matches Played by Map
+```{r, desc_matches}
+plot_dist_map(matchmeta)
 ```
 
 
-Note that an obvious limitation to this type of model is that it assumes linearity in the performance scores. That is to say that it assumes that if civilisation A beats civilisation B and civilisation B beats civilisation C then civilisation A should also beat civilisation C. Obviously it is clear this logic does not hold in AOE2 where civilisation superiority is multifaceted. Regardless, the model still gives us a good estimate of the teams *average* performance. 
+### Summary of Elo Distribution
+
+```{r, desc_elo}
+plot_dist_elo(matchmeta)
+```
 
 
+### Play Rate by Civilisation
+
+```{r, desc_pr}
+pr <- data_pr(matchmeta = matchmeta, players = players)
+plot_pr(pr)
+```
 
 
-### Bradley-Terry Performance Scores By Civilisation (Solo Games)
-<img src="../outputs/g_ia_bt_civ.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
+## Win Rates
 
-### Bradley-Terry Performance Scores By Civilisation and Play Rate (Solo Games)
-<img src="../outputs/g_ia_bt_civ_PR.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
+### Naive Win Rates
 
-### Bradley-Terry Performance Scores By Civilisation (Team Games)
-<img src="../outputs/g_ta_bt_civ.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Bradley-Terry Performance Scores By Civilisation and Play Rate (Team Games)
-<img src="../outputs/g_ta_bt_civ_PR.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Bradley-Terry Performance Scores By Civilisation (Solo vs Team Games)
-<img src="../outputs/g_bt_civ.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
+```{r, wr_naive}
+wr_naive <- data_wr_naive(matchmeta = matchmeta, players = players)
+plot_wr_naive(wr_naive)
+```
 
 
+### Averaged Win Rates
+```{r, wr_avg}
+wr_avg_coef <- data_cvc(matchmeta = matchmeta, players = players)
+wr_avg <- data_wr_avg(wr_avg_coef)
+plot_wr_avg(wr_avg)
+```
 
 
+### Naive Win Rates vs Play Rate
 
-## Naive Win Rates
-
-This section outlines each civilisations win rates taking no account for the difference in Elo between players or for the dependence between results. 
-
-### Naive Win Rate By Civilisation (Solo Games)
-<img src="../outputs/g_ia_desc_WR.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Difference in Civilisation Win Rate from the Mean by Elo  (Solo Games)
-<img src="../outputs/g_ia_slice.png" width="80%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Naive Win Rate By Civilisation (Team Games)
-<img src="../outputs/g_ta_desc_WR.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-### Difference in Civilisation Win Rate from the Mean by Elo  (Team Games)
-<img src="../outputs/g_ta_slice.png" width="80%" style="display: block; margin: auto;" />
-<br/> <br/>
+```{r, wr_pr}
+plot_pr_wr(wr_naive, pr)
+```
 
 
-## Civilisation vs Civilisation Results
+### Naive Win Rates by Elo
+```{r, wr_slice, opts.label='square'}
+plot_slice(matchmeta = matchmeta_slice, players = players)
+```
 
-This section provides information on individual civilisation v civilisation win rates. Please note that data here is very limited with some combinations of civilisation matchups having less than 30 data points. As a consequence of this some of the results (particularly the optimal civilisation selection) are unstable and should not be given that much weight. 
 
-### Individual Civilisation Win Rates (Solo Games) {.tabset .tabset-fade .tabset-pills}
+### Civilisation v Civilisation Win Rates{.tabset .tabset-fade .tabset-pills}
 
-```{r, echo = FALSE, results = "asis"}
-cl <- readRDS("./outputs/g_ia_cvc_civs_meta.Rds")
+```{r, wr_cvc, results = "asis"}
+plots <- plot_cvc(wr_avg_coef)
 id <- "cvcip"
 cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
 cat(glue::glue('<input id="{id}">'))
-for ( civ in names(cl)){
-    file <- cl[[civ]]
+for ( civ in names(plots)){
     display <- if_else(civ == "Aztecs", "true", "none")
     cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
-    cat(glue::glue('<img src=".{file}" width="70%" style="display: block; margin: auto;" />'))
+    print(plots[[civ]])
     cat("</div>")
 }
 ```
 
 
-### Hierarchical Clustering Dendrogram (Solo Games)
-<img src="../outputs/g_ia_cvc_clust.png" width="70%" style="display: block; margin: auto;" />
-<br/><br/>
-
-This output attempts to highlight civilisations that are "similar" based upon their win rates vs other civilisations. The algorithm works by recursively grouping civilisations (or groups of civilisations) that are the most similar to each other until there is only 1 group. The lower down on the y-axis that civilisations are grouped indicates a higher degree of similarity whilst civilisations that are grouped higher up on the y-axis indicates a lower degree of similarity. 
-
-
-
-### Optimal Civilisation Selection (Solo Games)
-
-```{r, echo = FALSE, results = "asis"}
-odat <- readRDS("./outputs/t_ia_cvc_opt.Rds") %>%
-    filter(p != 0) %>%
-    mutate(p = paste(round(p * 100,2), "%")) %>%
-    select(Civilisation = names, `Selection Rate` = p) 
-
-kable(odat, align = "cr", "html") %>%
-    kable_styling(full_width = F)
-
-```
-
-This table indicates what the optimal civilisation selection rates are in order to maximise your chance of beating a player who is also trying to select their civilisation to maximise their win rate. I.e. In order to maximise your odds of winning you should select your civilisation at random with the probability listed above.  As stated in the introduction to this section these numbers in particular are unstable and change quite dramatically everytime I refresh the data and as such should not be over-interpreted.
-
-
-(Credit to Reddit u/AccomplishedNinja488 for suggesting and providing guidance on how to calculate this output)
-
-
-
-## Appendix
-
-
-
-### Bradley-Terry Performance Scores By Unit (Solo Games)
-
-<img src="../outputs/g_ia_bt_cu.png" width="70%" style="display: block; margin: auto;" />
-<br/> <br/>
-
-The purpose of this output was to decompose civilisations performance scores by the units that they use so we can identify if any particular unit / bonus is overpowered. The idea is that civilisations scores aren't specific to the civilisation but instead are composed of "components" that make up that civilisation i.e. civilisation A = wood bonus + knights + elephants. Unfortunately this sort of decomposition is dependent on being able to know what units a civilisation actually uses. I attempted to manually classify the civilisations (which can be found [here](https://docs.google.com/spreadsheets/d/1SFPZlTfP38foj9oy_gYviUK2k9_neIjwle6PKi1YCoA/edit#gid=1597095642)) however its highly subjective and irregularities in the result indicate to me that it is unlikely to be accurate. Still it took a lot of work and I think it's fairly interesting so I have left the output here in the appendix for reference.
-
-To reiterate that last point though, there are irregularities in the output which suggest it is unlikely to be accurate. To improve the output we need access to more reliable data on civilisation unit usage. 
-
-
-
-### Frequently Asked Questions & Critiques
-
-The following are common critiques and questions I see with regards to assessing civilisation win rate statistics along with my personal opinion / response towards them.
-
 <br/>
-
-**1) You shouldn't include games with players below an Elo of X as the civilisation is nowhere near as important as other factors such as their overall understanding of the game and are likely making a ton of mistakes which don't reflect the civilisations overall ability / balance.**
-
-I have two main objections to this argument, the first being more statistical in nature and the other being my personal feelings towards what it means to "balance" a game. 
-
-So my first argument is that just because civilisation is less important that player skill doesn't mean that these games don't have value. Fundamentally the low Elo just means there is more noise in the data and that it's harder to pick out the signal. However this does NOT mean that the data is useless and we should disregard it. It just means we need more of it in order to identify the effects of the choice of civilisation.
-
-My second argument is that I don't think it is sensible to just balance the game based upon the pros / perfect play of a civilisation; I strongly believe we should strive to ensure the game is balanced across all levels of gameplay. As an extreme example let's imagine we have a civ that completely dominates and is oppressive at Elos <= 1500 but that the pros are easily able to counter with pixel perfect micro. Would you consider this balanced just because the pros are fine with it even though it breaks the game for the vast vast majority of players ? Alas I feel it is important to assess and strive for balance across all levels of play and not just at the top levels. 
-
 <br/>
-
-**2) You need to account for players who play the vast majority of their games as a single civilisation**
-
-This actually tends to be a non-issue due to the fact that games are balanced by their Elo rating which equates to their average in-game performance. Sure as a player plays more games with a specific civilisation they get good at using that civilisation and thus get better at using it. As a result their Elo rises until they are playing other players that can use their civilisations equally as well. The common argument is then that when the player who uses the same civilisation all the time uses a different civilisation they are super likely to lose and thus bias the results of the other civilisations. In reality though the fact that they only play a single civilisation all the time means that they contribute nearly no data for the other civilisations, and yes whilst this data might be biased, thus has no meaningful impact on the win rates of the other civilisations. 
-
-<br/><br/>
-
-
-
-
