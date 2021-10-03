@@ -64,7 +64,9 @@ plot_pr_wr <- function(wr, pr) {
         geom_text_repel(min.segment.length = unit(0.1, "lines"), alpha = 0.7) +
         labs(caption = footnotes) + 
         ylab("Play Rate (%)") +
-        xlab("Win Rate (%)")
+        xlab("Win Rate (%)") +
+        geom_vline(xintercept = 50, col = "red", alpha = 0.65) +
+        geom_hline(yintercept = 1/nrow(pr) * 100, col = "red", alpha = 0.65)
 }
 
 

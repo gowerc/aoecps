@@ -18,13 +18,25 @@ output:
 ---
 
 
+```{r, echo = FALSE, eval = FALSE, message = FALSE}
+params <- list(
+    lower_elo = 1200,
+    lower_elo_slice = 900,
+    mapclass = "Open",
+    leaderboard = "1v1 Random Map",
+    lower_dt = lubridate::ymd_hms("2021-08-20 01:00:00")
+)
+```
+
 
 ```{r, setup, echo = FALSE, results = FALSE, message = FALSE}
+
 
 knitr::opts_chunk$set(
     echo = FALSE, 
     collapse = TRUE,
     message = FALSE,
+    warning = FALSE,
     comment = "#>",
     fig.retina = 2, # Control using dpi
     fig.width = 9,
@@ -40,6 +52,7 @@ knitr::opts_chunk$set(
     optipng = "-o1 -quiet"
 )
 
+
 knitr::opts_template$set(square = list(
     fig.width = 9,
     fig.height = 9, 
@@ -47,13 +60,6 @@ knitr::opts_template$set(square = list(
     out.width ="700px"
 ))
 
-# params <- list(
-#     lower_elo = 1200,
-#     lower_elo_slice = 900,
-#     mapclass = "Open",
-#     leaderboard = "1v1 Random Map",
-#     lower_dt = ymd_hms("2021-08-20 01:00:00")
-# )
 
 devtools::load_all()
 library(dplyr)
@@ -98,10 +104,10 @@ This document was built by filtering the data based on the following criteria:
 - Leaderboard = **`r params$leaderboard`**
 - Matches started between **`r as.Date(params$lower_dt)`** and **`r as.Date(max(matchmeta$start_dt))`**
 - Matches have a map classification of "**`r params$mapclass`**"
-- The lowest Elo player in the match has an Elo greater than `r params$lower_elo`
+- The lowest Elo player in the match has an Elo greater than **`r params$lower_elo`**
 
 Please note that for the "Win rate by Elo" plot, all matches that have the
-lowest Elo player in the     match having an Elo greater `r params$lower_elo_slice` have been included.
+lowest Elo player in the     match having an Elo greater **`r params$lower_elo_slice`** have been included.
 
 ## Descriptives
 

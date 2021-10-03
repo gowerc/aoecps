@@ -1,13 +1,14 @@
 
 rule all:
     input:
+        "outputs/index.html",
         "outputs/report_A.html",
         "outputs/report_B.html",
         "outputs/report_C.html",
         "outputs/report_D.html",
         "outputs/report_E.html",
-        "outputs/report_F.html",
-        "outputs/index.html"
+        "outputs/report_F.html"
+
 
 
 rule db:
@@ -140,7 +141,7 @@ rule:
                 output_dir = './outputs',
                 output_file = 'report_E.html',
                 params = list(
-                    lower_elo = 1200,
+                    lower_elo = 1100,
                     lower_elo_slice = 800,
                     mapclass = 'Any',
                     leaderboard = '1v1 Empire Wars',
@@ -162,7 +163,7 @@ rule:
                 output_dir = './outputs',
                 output_file = 'report_F.html',
                 params = list(
-                    lower_elo = 1200,
+                    lower_elo = 1100,
                     lower_elo_slice = 800,
                     mapclass = 'Any',
                     leaderboard = 'Team Empire Wars',

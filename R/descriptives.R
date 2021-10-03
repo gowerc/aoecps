@@ -8,7 +8,11 @@
 plot_dist_elo <- function(matchmeta){
 
     elo <- matchmeta$rating_mean
-    cuts <- seq(min(elo), max(elo) + 100, by = 100)
+
+    lb <- floor(min(elo)/100) * 100
+    ub <- ceiling(max(elo)/100) * 100
+    cuts <- seq(lb, ub, by = 100)
+
 
     pdat <- matchmeta %>%
         mutate(elocat = cut(rating_mean, cuts, right = FALSE, dig.lab = 4)) %>%
@@ -16,6 +20,7 @@ plot_dist_elo <- function(matchmeta){
         tally() %>%
         mutate(p = sprintf("%4.1f%%", n / sum(n) * 100)) %>%
         mutate(yadj = n + max(n) / 50)
+
 
     strings <- matchmeta %>%
         mutate(elo = rating_mean) %>% 

@@ -32638,24 +32638,24 @@ pre code {
 <li><a href="#confidence-intervals-and-why-they-are-important">Confidence Intervals and why they are Important</a></li>
 <li><a href="#naive-win-rates">Naive Win Rates</a></li>
 <li><a href="#averaged-win-rates">Averaged Win Rates</a></li>
-<li><a href="#frequently-asked-questions-critiques">Frequently Asked Questions &amp; Critiques</a></li>
 </ul></li>
+<li><a href="#frequently-asked-questions-critiques">Frequently Asked Questions &amp; Critiques</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This report attempts to outline civilisation performance statistics in order to try and identify areas of imbalance within the game as well as stimulate meaningful debate. Big thank you to <a href="https://aoe2.net/" class="uri">https://aoe2.net/</a> for making the data available and accessible.</p>
+<p>This document provides win rate and play rate statistics for Age of Empires 2 DE across different game modes and map types. Credit to <a href="https://aoe2.net/" class="uri">https://aoe2.net/</a> for providing the data used to generate these statistics.</p>
 </div>
 <div id="statistics" class="section level2">
 <h2>Statistics</h2>
 <table>
 <thead>
 <tr class="header">
-<th align="center">Link</th>
+<th align="center">Links</th>
 <th align="center">Leadboard</th>
 <th align="center">Map Classification</th>
-<th align="center">Elo Limit</th>
+<th align="center">Lower Elo Inclusion Limit</th>
 </tr>
 </thead>
 <tbody>
@@ -32687,13 +32687,13 @@ pre code {
 <td align="center"><a href="./report_E.html">Link</a></td>
 <td align="center">1v1 Empire Wars</td>
 <td align="center">Any</td>
-<td align="center">1200</td>
+<td align="center">1100</td>
 </tr>
 <tr class="even">
 <td align="center"><a href="./report_F.html">Link</a></td>
 <td align="center">Team Empire Wars</td>
 <td align="center">Any</td>
-<td align="center">1200</td>
+<td align="center">1100</td>
 </tr>
 </tbody>
 </table>
@@ -32702,17 +32702,45 @@ pre code {
 <h2>Methods</h2>
 <div id="confidence-intervals-and-why-they-are-important" class="section level3">
 <h3>Confidence Intervals and why they are Important</h3>
-<p>A key topic I want to talk about is that of confidence intervals. A common critique you wil hear when talking about AOE2 statistics is “you can’t trust that value, the sample size is too small!”. A natural question is then “well how much of a sample size do we need?” or the equivanelt question of “how much should we trust this number”. This is where confidence intervals come in.</p>
-<p>The general purpose of a confidence interval is to give an idea of how much we trust we should place in a statistic. The naive explanation is that a 95% confidence interval is the range of values in which there is a 95% chance that the true value that we are trying to estimate lies in. In short, wide confidence intervals mean we should have less trust in our estimates whilst narrow confidence intervals mean we should have more trust in our estimate.</p>
+<p>A common critique you will hear when talking about any statistic is “you can’t trust that value, the sample size is too small!”. A natural question is then “well how big should the sample size be?” or the equivanelt question of “how much should I trust this statistic given the sample size”. This is where confidence intervals come in.</p>
+<p>A key thing to realise is that when we create statistics, like win rates, what we are creating are estimates of some true unknown value. Confidence intervals can thus be thought of as the range of values in which the true value is likely to be found in i.e. there is a 95% chance that the true value for the win rate exists within this band. Thoughout these documents the 95% confidence intervals are presented as error bars around the point estimates. More generally speaking, the wider the confidence interval is the less trust we should have in the estimate whilst the narrower the confidence interval is the more trust we should have in the estimate.</p>
+<p>Please note that my above description of confidence intervals is designed to give an intuiative sense of what confidence intervals represent, however what I’ve written isn’t stictly correct. If you want to get into the weeds of what they are then please see the Wiki page <a href="https://en.wikipedia.org/wiki/Confidence_interval">here</a>.</p>
 </div>
 <div id="naive-win-rates" class="section level3">
 <h3>Naive Win Rates</h3>
+<p>Naive win rates are calculated by fitting a logistic regression model to each civ’s match data independently, i.e.:</p>
+<p><span class="math display">\[
+Y_{ij} \sim Bin(1, p_{ij}) \\
+p_i = \text{logistic}(\beta_i +  \beta_d d_{j})
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(Y_{ij}\)</span> is 1 if civ <span class="math inline">\(i\)</span> won its <span class="math inline">\(j\)</span>’th match</li>
+<li><span class="math inline">\(\beta_i\)</span> is civ <span class="math inline">\(i\)</span>’s logit win rate</li>
+<li><span class="math inline">\(d_j\)</span> is the difference in mean Elo between team 1 and team 2 in match <span class="math inline">\(j\)</span></li>
+</ul>
+<p>All mirror matchups are excluded.</p>
 </div>
 <div id="averaged-win-rates" class="section level3">
 <h3>Averaged Win Rates</h3>
+<p>Averaged win rates are calculated by taking the average across all civ v civ win rates. I.e The Aztec win rate is calculated by taking the mean of their win rate vs Berbers, Britons, Bulgarians, etc, separately. This statistic can be thought of as the win rate if your opponent was picking their civilisation at random.</p>
+<p>For 1v1’s each civ v civ win rate is calculated using the “naive” method mentioned above. For team games though the win rates are calculated by fitting a logistic regression that derives the probability of winning as the average across each pairwise civilisation matchup. For example lets say in match <span class="math inline">\(j\)</span> that team 1 had civ’s A, B and C whilst team 2 had civ’s X, Y and Z. The model fitted would then be:</p>
+<p><span class="math display">\[
+Y_{j} \sim Bin(1, p_{j}) \\
+p_i = \text{logistic}\left(\frac{\beta_{AX} + \beta_{AY} + \beta_{AZ} + \beta_{BX} + \beta_{BY} + \beta_{BZ} + \beta_{CX} + \beta_{CY} + \beta_{CZ}}{9} +  \beta_d d_{j}\right)
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(Y_j\)</span> = 1 if team 1 won or 0 if team 2 won</li>
+<li><span class="math inline">\(\beta_{mn}\)</span> is civ <span class="math inline">\(m\)</span>’s win rate against civ <span class="math inline">\(n\)</span></li>
+<li><span class="math inline">\(d_j\)</span> is the difference in mean Elo between team 1 and team 2</li>
+</ul>
+<p>Please note that a major limitation of this formulation is that it doesn’t allow for any interaction effects. I.e. it doesn’t account for the fact that some civ pairings are stronger together than if they are considered independently (think a team of all cav civs vs a team of both archer and cav civs).</p>
+<p>In all cases, a small Laplace Smoother was added to avoid issues associated with certainty bias from civ v civ samples (most notabily in the Empire Wars data). This will mean that the confidence are very marginally underestimated but realistically this is negligible.</p>
 </div>
-<div id="frequently-asked-questions-critiques" class="section level3">
-<h3>Frequently Asked Questions &amp; Critiques</h3>
+</div>
+<div id="frequently-asked-questions-critiques" class="section level2">
+<h2>Frequently Asked Questions &amp; Critiques</h2>
 <p>The following are common critiques and questions I see with regards to assessing civilisation win rate statistics along with my personal opinion / response towards them.</p>
 <p><br /></p>
 <p><strong>1) You shouldn’t include games with players below an Elo of X as the civilisation is nowhere near as important as other factors such as their overall understanding of the game and are likely making a ton of mistakes which don’t reflect the civilisations overall ability / balance.</strong></p>
@@ -32721,9 +32749,8 @@ pre code {
 <p>My second argument is that I don’t think it is sensible to just balance the game based upon the pros / perfect play of a civilisation; I strongly believe we should strive to ensure the game is balanced across all levels of gameplay. As an extreme example let’s imagine we have a civ that completely dominates and is oppressive at Elos &lt;= 1500 but that the pros are easily able to counter with pixel perfect micro. Would you consider this balanced just because the pros are fine with it even though it breaks the game for the vast vast majority of players ? Alas I feel it is important to assess and strive for balance across all levels of play and not just at the top levels.</p>
 <p><br /></p>
 <p><strong>2) You need to account for players who play the vast majority of their games as a single civilisation</strong></p>
-<p>This is a fair critique; play rates do have a large impact on the win rates. See some of my <a href="https://www.reddit.com/r/aoe2/comments/pl4jpz/a_brief_look_at_the_impact_of_civ_picking_on_win/">earlier work</a> to get an idea of how they are impacted. I am hoping at a later date to try and filter the data down to players who play random however I fear there is unlikely to be sufficient data to do this outside of 1v1 Arabia.</p>
+<p>This is a fair critique; play rates do have a large impact on the win rates. See some of my <a href="https://www.reddit.com/r/aoe2/comments/pl4jpz/a_brief_look_at_the_impact_of_civ_picking_on_win/">earlier work</a> to get an idea of how they are impacted. That being said the main impact appears to be a regression towards having a neutral 50% win rate so it is likely that the most played civ’s have their win rate underestimated (I’m looking at you Franks). I am hoping at a later date to try and filter the data down to players who play random however I fear there is unlikely to be sufficient data to generate any meaningful statistics.</p>
 <p><br /><br /></p>
-</div>
 </div>
 
 
