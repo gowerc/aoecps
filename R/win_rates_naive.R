@@ -1,13 +1,4 @@
-#' @import dplyr
-#' @import ggplot2
-#' @import tidyr
-#' @import scales
-#' @import stringr
-#' @import forcats
-#' @import lubridate
-#' @import assertthat
-#' @import ggrepel
-#' @import purrr
+
 data_wr_naive <- function(matchmeta, players){
     
     players2 <- players %>% semi_join(matchmeta, by= "match_id")
@@ -41,7 +32,7 @@ data_wr_naive <- function(matchmeta, players){
             wr = est
         ) %>% 
         rename(civ_name = coef)
-    
+
     return(moddat2)
 }
 
@@ -53,8 +44,9 @@ plot_wr_naive <- function(dat){
 
 
     footnotes <- c(
-        "The error bars represent the 95% confidence interval<br/>",
-        "The win rates presented are the naive win rates (# of wins / # of games) adjusted for difference in mean Elo"
+        "Win rates have been calculated as the # of wins / # of games.<br/>",
+        "Win rates have been adjusted for difference in mean Elo.<br/>",
+        "The error bars represent the 95% confidence interval."
     ) %>%
         as_footnote()
 

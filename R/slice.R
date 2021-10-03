@@ -68,8 +68,10 @@ plot_slice <- function(matchmeta, players){
     footnotes <- c(
         "Win rates are calculated at each point X after filtering the data to",
         "only include matches where mean Elo is within +- 0.1 percentiles of X.<br/>",
-        "All lines have been smoothed using a GAM.<br/>",
-        "The win rates presented are the naive win rates (# of wins / # of games) adjusted for difference in mean Elo"
+        "Win rates have been calculated as the # of wins / # of games. ",
+        "Win rates have been adjusted for difference in mean Elo.<br/>",
+        "The error bars represent the 95% confidence interval. ",
+        "All lines have been smoothed using a GAM."
     ) %>%
         as_footnote()
 
@@ -77,8 +79,8 @@ plot_slice <- function(matchmeta, players){
         geom_ribbon(alpha = 0.9, col = NA) +
         geom_line(col = "#383838") + 
         theme_bw() +
-        scale_y_continuous(breaks = pretty_breaks(4)) +
-        scale_x_continuous(breaks = pretty_breaks(4)) +
+        scale_y_continuous(breaks = pretty_breaks(5)) +
+        scale_x_continuous(breaks = pretty_breaks(5)) +
         geom_hline(yintercept = 50, col = "red", alpha = 0.8) +
         ylab("Win Rate (%)") +
         xlab("Elo") +

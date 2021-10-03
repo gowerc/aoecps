@@ -8,8 +8,6 @@ data/*
 *.rds
 *.RDS
 Rplots.pdf
-outputs/*
 .gsauth
 !.gitkeep
 .snakemake
-!outputs/report.html

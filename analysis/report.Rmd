@@ -1,0 +1,183 @@
+---
+title: Age of Empires 2 Civilisation Performance Statistics
+date: "`r format(Sys.time(), '%d %b %Y')`"
+params:
+    lower_elo: NULL
+    lower_elo_slice: NULL
+    mapclass: NULL
+    leaderboard: NULL
+    lower_dt: NULL
+output:
+    html_document:
+        theme: cerulean
+        toc: true
+        toc_depth: 3
+        css: [www/jquery-ui.css, www/jquery-ui.structure.css, www/styles.css, www/jquery-ui.theme.css]
+        includes:
+            in_header: www/header.html
+---
+
+
+
+```{r, setup, echo = FALSE, results = FALSE, message = FALSE}
+
+knitr::opts_chunk$set(
+    echo = FALSE, 
+    collapse = TRUE,
+    message = FALSE,
+    comment = "#>",
+    fig.retina = 2, # Control using dpi
+    fig.width = 9,
+    fig.height = 9 * 5/8, 
+    out.height= "500px", 
+    out.width="800px",
+    fig.pos = "t",  # pdf mode
+    fig.align = "center",
+    dpi = if (knitr::is_latex_output()) 72 else 300, 
+    out.width = "100%",
+    dev = "svg",
+    dev.args = list(png = list(type = "cairo-png")),
+    optipng = "-o1 -quiet"
+)
+
+knitr::opts_template$set(square = list(
+    fig.width = 9,
+    fig.height = 9, 
+    out.height = "700px", 
+    out.width ="700px"
+))
+
+# params <- list(
+#     lower_elo = 1200,
+#     lower_elo_slice = 900,
+#     mapclass = "Open",
+#     leaderboard = "1v1 Random Map",
+#     lower_dt = ymd_hms("2021-08-20 01:00:00")
+# )
+
+devtools::load_all()
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(tidyr)
+library(lubridate)
+
+
+players <- readRDS("./data/ad_players.Rds")
+pre_matchmeta <- readRDS("./data/ad_matchmeta.Rds")
+
+matchmeta <- pre_matchmeta %>%
+    filter(
+        start_dt >= params$lower_dt,
+        rating_min >= params$lower_elo,
+        leaderboard_name == params$leaderboard
+    )
+
+if (params$mapclass != "Any") {
+    matchmeta <- matchmeta %>% filter(map_class == params$mapclass)
+}
+
+
+matchmeta_slice <- pre_matchmeta %>%
+    filter(
+        start_dt >= params$lower_dt,
+        rating_min >= params$lower_elo_slice,
+        leaderboard_name == params$leaderboard
+    )
+
+if (params$mapclass != "Any") {
+    matchmeta_slice <- matchmeta_slice %>% filter(map_class == params$mapclass)
+}
+```
+
+
+## Introduction
+
+This document was built by filtering the data based on the following criteria:
+
+- Leaderboard = **`r params$leaderboard`**
+- Matches started between **`r as.Date(params$lower_dt)`** and **`r as.Date(max(matchmeta$start_dt))`**
+- Matches have a map classification of "**`r params$mapclass`**"
+- The lowest Elo player in the match has an Elo greater than `r params$lower_elo`
+
+Please note that for the "Win rate by Elo" plot, all matches that have the
+lowest Elo player in the     match having an Elo greater `r params$lower_elo_slice` have been included.
+
+## Descriptives
+
+### Matches Played by Patch
+
+```{r, desc_patch}
+plot_dist_patch(matchmeta)
+```
+
+### Matches Played by Map
+```{r, desc_matches}
+plot_dist_map(matchmeta)
+```
+
+
+### Summary of Elo Distribution
+
+```{r, desc_elo}
+plot_dist_elo(matchmeta)
+```
+
+
+### Play Rate by Civilisation
+
+```{r, desc_pr}
+pr <- data_pr(matchmeta = matchmeta, players = players)
+plot_pr(pr)
+```
+
+
+## Win Rates
+
+### Naive Win Rates
+
+```{r, wr_naive}
+wr_naive <- data_wr_naive(matchmeta = matchmeta, players = players)
+plot_wr_naive(wr_naive)
+```
+
+
+### Averaged Win Rates
+```{r, wr_avg}
+wr_avg_coef <- data_cvc(matchmeta = matchmeta, players = players)
+wr_avg <- data_wr_avg(wr_avg_coef)
+plot_wr_avg(wr_avg)
+```
+
+
+### Naive Win Rates vs Play Rate
+
+```{r, wr_pr}
+plot_pr_wr(wr_naive, pr)
+```
+
+
+### Naive Win Rates by Elo
+```{r, wr_slice, opts.label='square'}
+plot_slice(matchmeta = matchmeta_slice, players = players)
+```
+
+
+### Civilisation v Civilisation Win Rates{.tabset .tabset-fade .tabset-pills}
+
+```{r, wr_cvc, results = "asis"}
+plots <- plot_cvc(wr_avg_coef)
+id <- "cvcip"
+cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
+cat(glue::glue('<input id="{id}">'))
+for ( civ in names(plots)){
+    display <- if_else(civ == "Aztecs", "true", "none")
+    cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
+    print(plots[[civ]])
+    cat("</div>")
+}
+```
+
+
+<br/>
+<br/>

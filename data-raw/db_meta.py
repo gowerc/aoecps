@@ -38,8 +38,3 @@ final[VERSION] = result
 
 with open("./data-raw/db_meta.json", "w") as fi:
     json.dump(final, fi)
-
-
-
-
-

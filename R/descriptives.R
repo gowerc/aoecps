@@ -6,6 +6,17 @@
 #######################################
 
 plot_dist_elo <- function(matchmeta){
+
+    elo <- matchmeta$rating_mean
+    cuts <- seq(min(elo), max(elo) + 100, by = 100)
+
+    pdat <- matchmeta %>%
+        mutate(elocat = cut(rating_mean, cuts, right = FALSE, dig.lab = 4)) %>%
+        group_by(elocat) %>%
+        tally() %>%
+        mutate(p = sprintf("%4.1f%%", n / sum(n) * 100)) %>%
+        mutate(yadj = n + max(n) / 50)
+
     strings <- matchmeta %>%
         mutate(elo = rating_mean) %>% 
         summarise(
@@ -29,24 +40,27 @@ plot_dist_elo <- function(matchmeta){
         as_footnote()
 
 
-    ggplot(matchmeta, aes(x = rating_mean)) +
-        geom_histogram(bins = 30) +
+    ggplot(pdat, aes(x = elocat, y = n)) +
+        geom_bar(stat = "identity") +
+        geom_text(aes(label = p, y = yadj)) + 
         theme_bw() +
         ylab("Count") +
         scale_y_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
-        scale_x_continuous(breaks = pretty_breaks(10), expand = expansion(c(0, 0.06))) +
+        scale_x_discrete(expand = expansion(c(0, 0.06))) +
         xlab("Mean Match Elo") +
         annotate(
             geom = "text",
             label = strings,
-            x = max(matchmeta$rating_mean),
+            x = nrow(pdat),
             y = Inf,
             hjust = 1,
             vjust = 1.1
         ) +
-        theme(plot.caption = element_text(hjust = 0)) + 
+        theme(
+            plot.caption = element_text(hjust = 0),
+            axis.text.x = element_text(hjust = 1, angle = 35)
+        ) + 
         labs( caption = footnotes)
-
 }
 
 
@@ -59,8 +73,15 @@ plot_dist_elo <- function(matchmeta){
 #######################################
 
 plot_dist_patch <- function(matchmeta){
-    ggplot(data = matchmeta, aes(x = version)) +
-        geom_bar() +
+    pdat <- matchmeta %>%
+        group_by(version) %>%
+        tally() %>%
+        mutate(p = sprintf("%4.1f%%", n / sum(n) * 100)) %>%
+        mutate(yadj = n + max(n) / 50)
+
+    ggplot(data = pdat, aes(x = version, y = n)) +
+        geom_bar(stat = "identity") +
+        geom_text(aes(label = p, y = yadj)) +
         theme_bw() +
         scale_y_continuous(breaks = pretty_breaks(8), expand = expansion(c(0, 0.05))) +
         xlab("Patch Version") +

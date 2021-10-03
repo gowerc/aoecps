@@ -63,7 +63,7 @@ p <- ggplot(pdat, aes(x = elocat, y = p)) +
     ) +
     theme(
         axis.text.x = element_text(hjust = 1, angle = 35),
-         plot.caption = element_text(hjust = 0)
+        plot.caption = element_text(hjust = 0)
     )
 
 

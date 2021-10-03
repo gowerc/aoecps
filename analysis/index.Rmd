@@ -1,0 +1,72 @@
+---
+title: Age of Empires 2 Civilisation Performance Statistics
+date: "`r format(Sys.time(), '%d %b %Y')`"
+output:
+    html_document:
+        theme: cerulean
+        toc: true
+        toc_depth: 3
+        css: [www/jquery-ui.css, www/jquery-ui.structure.css, www/styles.css, www/jquery-ui.theme.css]
+        includes:
+            in_header: www/header.html
+---
+
+
+
+## Introduction
+
+This report attempts to outline civilisation performance statistics in order to
+try and identify areas of imbalance within the game as well as stimulate meaningful debate. Big thank 
+you to https://aoe2.net/ for making the data available and accessible. 
+
+## Statistics
+
+| Link | Leadboard | Map Classification | Elo Limit | 
+|:---:|:---:|:---:|:---:|
+| [Link](./report_A.html) | 1v1 Random Map | Open | 1200 | 
+| [Link](./report_B.html) | 1v1 Random Map | Closed | 1200 | 
+| [Link](./report_C.html) | Team Random Map | Open | 2000 | 
+| [Link](./report_D.html) | Team Random Map | Closed | 2000 | 
+| [Link](./report_E.html) | 1v1 Empire Wars | Any | 1200 | 
+| [Link](./report_F.html) | Team Empire Wars | Any | 1200 | 
+
+
+## Methods
+
+### Confidence Intervals and why they are Important
+
+A key topic I want to talk about is that of confidence intervals. A common critique you wil hear when talking about AOE2 statistics is "you can't trust that value, the sample size is too small!". A natural question is then "well how much of a sample size do we need?" or the equivanelt question of "how much should we trust this number". This is where confidence intervals come in.
+
+The general purpose of a confidence interval is to give an idea of how much we  trust we should place in a statistic. The naive explanation is that a 95% confidence interval is the range of values in which there is a 95% chance that the true value that we are trying to estimate lies in. In short, wide confidence intervals mean we should have less trust in our estimates whilst narrow confidence intervals mean we should have more trust in our estimate.
+
+### Naive Win Rates
+
+### Averaged Win Rates
+
+
+
+### Frequently Asked Questions & Critiques
+
+The following are common critiques and questions I see with regards to assessing civilisation win rate statistics along with my personal opinion / response towards them.
+
+<br/>
+
+**1) You shouldn't include games with players below an Elo of X as the civilisation is nowhere near as important as other factors such as their overall understanding of the game and are likely making a ton of mistakes which don't reflect the civilisations overall ability / balance.**
+
+I have two main objections to this argument, the first being more statistical in nature and the other being my personal feelings towards what it means to "balance" a game. 
+
+So my first argument is that just because civilisation is less important that player skill doesn't mean that these games don't have value. Fundamentally the low Elo just means there is more noise in the data and that it's harder to pick out the signal. However this does NOT mean that the data is useless and we should disregard it. It just means we need more of it in order to identify the effects of the choice of civilisation.
+
+My second argument is that I don't think it is sensible to just balance the game based upon the pros / perfect play of a civilisation; I strongly believe we should strive to ensure the game is balanced across all levels of gameplay. As an extreme example let's imagine we have a civ that completely dominates and is oppressive at Elos <= 1500 but that the pros are easily able to counter with pixel perfect micro. Would you consider this balanced just because the pros are fine with it even though it breaks the game for the vast vast majority of players ? Alas I feel it is important to assess and strive for balance across all levels of play and not just at the top levels. 
+
+<br/>
+
+**2) You need to account for players who play the vast majority of their games as a single civilisation**
+
+This is a fair critique; play rates do have a large impact on the win rates. See some of my [earlier work](https://www.reddit.com/r/aoe2/comments/pl4jpz/a_brief_look_at_the_impact_of_civ_picking_on_win/) to get an idea of how they are impacted. I am hoping at a later date to try and filter the data down to players who play random however I fear there is unlikely to be sufficient data to do this outside of 1v1 Arabia. 
+
+<br/><br/>
+
+
+
+

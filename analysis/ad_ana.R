@@ -66,6 +66,7 @@ valid_maptype <- dat %>%
     filter(!is.na(map_type)) %>%
     distinct(match_id)
 
+
 valid_winner <- dat %>%
     group_by(match_id, team) %>%
     summarise(
@@ -77,11 +78,16 @@ valid_winner <- dat %>%
     filter(u_res == 1, n_na == 0)
 
 
+invalid_version <- dat %>%
+    filter(is.na(version))
+
+
 dat2 <- dat %>%
     semi_join(valid_player_counts, by = "match_id") %>%
     semi_join(valid_rating, by = "match_id") %>%
     semi_join(valid_maptype, by = "match_id") %>%
     semi_join(valid_winner, by = "match_id") %>%
+    anti_join(invalid_version, by = "match_id") %>%
     mutate(mversion = get_meta_version(start_dt))
 
 
@@ -157,4 +163,5 @@ saveRDS(
     object = players,
     file = "./data/ad_players.Rds"
 )
+
 
