@@ -2,11 +2,7 @@
 title: Age of Empires 2 Civilisation Performance Statistics
 date: "`r format(Sys.time(), '%d %b %Y')`"
 params:
-    lower_elo: NULL
-    lower_elo_slice: NULL
-    mapclass: NULL
-    leaderboard: NULL
-    lower_dt: NULL
+    type: NULL
 output:
     html_document:
         theme: cerulean
@@ -15,37 +11,34 @@ output:
         css: [www/jquery-ui.css, www/jquery-ui.structure.css, www/styles.css, www/jquery-ui.theme.css]
         includes:
             in_header: www/header.html
+editor_options: 
+  chunk_output_type: console
 ---
 
 
-```{r, echo = FALSE, eval = FALSE, message = FALSE}
-params <- list(
-    lower_elo = 1200,
-    lower_elo_slice = 900,
-    mapclass = "Open",
-    leaderboard = "1v1 Random Map",
-    lower_dt = lubridate::ymd_hms("2021-08-20 01:00:00")
-)
-```
-
-
 ```{r, setup, echo = FALSE, results = FALSE, message = FALSE}
+devtools::load_all()
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(tidyr)
+library(lubridate)
 
 
 knitr::opts_chunk$set(
-    echo = FALSE, 
+    echo = FALSE,
     collapse = TRUE,
     message = FALSE,
     warning = FALSE,
     comment = "#>",
     fig.retina = 2, # Control using dpi
     fig.width = 9,
-    fig.height = 9 * 5/8, 
-    out.height= "500px", 
-    out.width="800px",
+    fig.height = 9 * 5 / 8,
+    out.height = "500px",
+    out.width = "800px",
     fig.pos = "t",  # pdf mode
     fig.align = "center",
-    dpi = if (knitr::is_latex_output()) 72 else 300, 
+    dpi = if (knitr::is_latex_output()) 72 else 300,
     out.width = "100%",
     dev = "svg",
     dev.args = list(png = list(type = "cairo-png")),
@@ -55,18 +48,17 @@ knitr::opts_chunk$set(
 
 knitr::opts_template$set(square = list(
     fig.width = 9,
-    fig.height = 9, 
-    out.height = "700px", 
-    out.width ="700px"
+    fig.height = 9,
+    out.height = "700px",
+    out.width = "700px"
 ))
 
 
-devtools::load_all()
-library(dplyr)
-library(ggplot2)
-library(scales)
-library(tidyr)
-library(lubridate)
+
+
+opts <- get_opts(params$type)
+
+# opts <- get_opts("rm_solo_closed")
 
 
 players <- readRDS("./data/ad_players.Rds")
@@ -74,25 +66,25 @@ pre_matchmeta <- readRDS("./data/ad_matchmeta.Rds")
 
 matchmeta <- pre_matchmeta %>%
     filter(
-        start_dt >= params$lower_dt,
-        rating_min >= params$lower_elo,
-        leaderboard_name == params$leaderboard
+        start_dt >= opts$lower_dt,
+        rating_min >= opts$lower_elo,
+        leaderboard_name == opts$leaderboard
     )
 
-if (params$mapclass != "Any") {
-    matchmeta <- matchmeta %>% filter(map_class == params$mapclass)
+if (opts$mapclass != "Any") {
+    matchmeta <- matchmeta %>% filter(map_class == opts$mapclass)
 }
 
 
 matchmeta_slice <- pre_matchmeta %>%
     filter(
-        start_dt >= params$lower_dt,
-        rating_min >= params$lower_elo_slice,
-        leaderboard_name == params$leaderboard
+        start_dt >= opts$lower_dt,
+        rating_min >= opts$lower_elo_slice,
+        leaderboard_name == opts$leaderboard
     )
 
-if (params$mapclass != "Any") {
-    matchmeta_slice <- matchmeta_slice %>% filter(map_class == params$mapclass)
+if (opts$mapclass != "Any") {
+    matchmeta_slice <- matchmeta_slice %>% filter(map_class == opts$mapclass)
 }
 ```
 
@@ -101,13 +93,14 @@ if (params$mapclass != "Any") {
 
 This document was built by filtering the data based on the following criteria:
 
-- Leaderboard = **`r params$leaderboard`**
-- Matches started between **`r as.Date(params$lower_dt)`** and **`r as.Date(max(matchmeta$start_dt))`**
-- Matches have a map classification of "**`r params$mapclass`**"
-- The lowest Elo player in the match has an Elo greater than **`r params$lower_elo`**
+- Leaderboard = **`r opts$leaderboard`**
+- Matches started between **`r as.Date(opts$lower_dt)`** and **`r as.Date(max(matchmeta$start_dt))`**
+- Matches have a map classification of "**`r opts$mapclass`**"
+- The lowest Elo player in the match has an Elo greater than **`r opts$lower_elo`**
+- Game length > 3 and < 180 in-game minutes
 
 Please note that for the "Win rate by Elo" plot, all matches that have the
-lowest Elo player in the     match having an Elo greater **`r params$lower_elo_slice`** have been included.
+lowest Elo player in the match having an Elo greater **`r opts$lower_elo_slice`** have been included.
 
 ## Descriptives
 
@@ -122,6 +115,10 @@ plot_dist_patch(matchmeta)
 plot_dist_map(matchmeta)
 ```
 
+### Matches Played by Game Length
+```{r, desc_gamelength}
+plot_dist_gamelength(matchmeta)
+```
 
 ### Summary of Elo Distribution
 
@@ -138,36 +135,52 @@ plot_pr(pr)
 ```
 
 
-## Win Rates
 
-### Naive Win Rates
+
+## Naive Win Rates
+
+### Naive Win Rates by Civilisation
 
 ```{r, wr_naive}
 wr_naive <- data_wr_naive(matchmeta = matchmeta, players = players)
 plot_wr_naive(wr_naive)
 ```
 
+### Naive Win Rates vs Play Rate
 
-### Averaged Win Rates
+```{r, wr_naive_pr}
+plot_pr_wr(wr_naive, pr)
+```
+
+
+
+## Averaged Win Rates
+
+### Averaged Win Rates by Civilisation
 ```{r, wr_avg}
 wr_avg_coef <- data_cvc(matchmeta = matchmeta, players = players)
 wr_avg <- data_wr_avg(wr_avg_coef)
 plot_wr_avg(wr_avg)
 ```
 
+### Averaged Win Rates vs Play Rate
 
-### Naive Win Rates vs Play Rate
-
-```{r, wr_pr}
-plot_pr_wr(wr_naive, pr)
+```{r, wr_avg_pr}
+plot_pr_wr(wr_avg, pr)
 ```
 
+
+## Miscellaneous Plots
 
 ### Naive Win Rates by Elo
-```{r, wr_slice, opts.label='square'}
-plot_slice(matchmeta = matchmeta_slice, players = players)
+```{r, wr_slice_elo, opts.label='square'}
+plot_slice_elo(matchmeta = matchmeta_slice, players = players)
 ```
 
+### Naive Win Rates by Game Length
+```{r, wr_slice_gamelength, opts.label = 'square'}
+plot_slice_gamelength(matchmeta = matchmeta, players = players)
+```
 
 ### Civilisation v Civilisation Win Rates{.tabset .tabset-fade .tabset-pills}
 
@@ -176,7 +189,7 @@ plots <- plot_cvc(wr_avg_coef)
 id <- "cvcip"
 cat(glue::glue('<label for="{id}">Select a Civilisation: </label>'))
 cat(glue::glue('<input id="{id}">'))
-for ( civ in names(plots)){
+for (civ in names(plots)) {
     display <- if_else(civ == "Aztecs", "true", "none")
     cat(glue::glue('<div class="{id}" id="{id}-{civ}" style="display:{display};">'))
     print(plots[[civ]])
