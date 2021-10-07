@@ -58,7 +58,7 @@ knitr::opts_template$set(square = list(
 
 opts <- get_opts(params$type)
 
-# opts <- get_opts("rm_solo_closed")
+# opts <- get_opts("rm_solo_any")
 
 
 players <- readRDS("./data/ad_players.Rds")
