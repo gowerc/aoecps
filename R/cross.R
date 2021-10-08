@@ -13,8 +13,7 @@ cross_wr_naive <- function(wr1, wr2, wr1_lb = "", wr2_lb = "") {
 
     footnotes <- c(
         "Win rates have been calculated as the # of wins / # of games.<br/>",
-        "Win rates have been adjusted for difference in mean Elo.<br/>",
-        "The error bars represent the 95% confidence interval."
+        "Win rates have been adjusted for difference in mean Elo."
     ) %>%
         as_footnote()
 

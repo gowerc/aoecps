@@ -9,7 +9,8 @@ rule all:
         "outputs/report_rm_team_open.html",
         "outputs/report_rm_team_closed.html",
         "outputs/report_ew_solo_any.html",
-        "outputs/report_ew_team_any.html"
+        "outputs/report_ew_team_any.html",
+        "outputs/cross.html"
 
 
 rule db:
