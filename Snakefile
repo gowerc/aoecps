@@ -8,8 +8,8 @@ rule all:
         "outputs/report_rm_team_any.html",
         "outputs/report_rm_team_open.html",
         "outputs/report_rm_team_closed.html",
-        "outputs/report_ew_solo_all.html",
-        "outputs/report_ew_team_all.html"
+        "outputs/report_ew_solo_any.html",
+        "outputs/report_ew_team_any.html"
 
 
 rule db:
@@ -43,7 +43,7 @@ rule:
 ###### Reports
 rule:
     input: "analysis/report.Rmd", "data/ad_matchmeta.Rds"
-    output: "outputs/report_{suffix}.html"
+    output: "outputs/report_{suffix}.html", "data/ad_report_{suffix}.Rds"
     shell:
         """
         Rscript -e "
@@ -57,7 +57,7 @@ rule:
         """
 
 rule:
-    input:"analysis/index.Rmd"
+    input: "analysis/index.Rmd"
     output: "outputs/index.html"
     shell:
         """
@@ -67,5 +67,31 @@ rule:
                 knit_root_dir = '/app',
                 output_dir = './outputs',
                 output_file = 'index.html'
+            )"
+        """
+
+
+report_data = [
+    "data/ad_report_ew_solo_any.Rds",
+    "data/ad_report_ew_team_any.Rds",
+    "data/ad_report_rm_solo_any.Rds",
+    "data/ad_report_rm_solo_closed.Rds",
+    "data/ad_report_rm_solo_open.Rds",
+    "data/ad_report_rm_team_any.Rds",
+    "data/ad_report_rm_team_closed.Rds",
+    "data/ad_report_rm_team_open.Rds"
+]
+
+rule:
+    input: "analysis/cross.Rmd", report_data
+    output: "outputs/cross.html"
+    shell:
+        """
+        Rscript -e "
+            rmarkdown::render(
+                input = '{input[0]}',
+                knit_root_dir = '/app',
+                output_dir = './outputs',
+                output_file = 'cross.html'
             )"
         """

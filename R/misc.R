@@ -37,8 +37,9 @@ get_map_class <- function() {
 }
 
 
-get_opts <- function(key) {
+get_opts <- function(key = NULL) {
     x <- yaml::read_yaml("./data-raw/report_meta.yml")
+    if(is.null(key)) return(x)
     assertthat::assert_that(key %in% names(x))
     x2 <- x[[key]]
     x2$lower_dt <- lubridate::ymd_hms(x2$lower_dt)

@@ -58,7 +58,7 @@ knitr::opts_template$set(square = list(
 
 opts <- get_opts(params$type)
 
-# opts <- get_opts("rm_solo_any")
+# opts <- get_opts("rm_solo_closed")
 
 
 players <- readRDS("./data/ad_players.Rds")
@@ -104,23 +104,23 @@ lowest Elo player in the match having an Elo greater **`r opts$lower_elo_slice`*
 
 ## Descriptives
 
-### Matches Played by Patch
+### Distribution of Matches Played by Patch
 
 ```{r, desc_patch}
 plot_dist_patch(matchmeta)
 ```
 
-### Matches Played by Map
+### Distribution of Matches Played by Map
 ```{r, desc_matches}
 plot_dist_map(matchmeta)
 ```
 
-### Matches Played by Game Length
+### Distribution of Matches Played by Game Length
 ```{r, desc_gamelength}
 plot_dist_gamelength(matchmeta)
 ```
 
-### Summary of Elo Distribution
+### Distribution of Matches Played by Mean Team Elo 
 
 ```{r, desc_elo}
 plot_dist_elo(matchmeta)
@@ -200,3 +200,52 @@ for (civ in names(plots)) {
 
 <br/>
 <br/>
+
+## Experimental
+
+This section contains outputs that are still being tweaked or reviewed and maybe removed or changed in the future.
+If you have any feedback or suggestions about them please let me know
+
+
+### Distribution of Players Highest Picked Civilisation's Play Rate
+
+For this plot we calculate the play rate of each players most played civ 
+(i.e. if I used Franks for 60% of my games, Mayans for 30% and Britains for 10%  I would get a value of 60).
+We then categories the counts into brackets of 10  (i.e. 0-10, 10-20, etc) and count how many are in each bracket.
+The idea is this should give some indication of how many people are playing random vs how many are 1-civ pickers.
+
+```{r, pr_civ_1}
+plot_pr_civ1(matchmeta, players, lower_limit = 25)
+```
+
+
+
+### Hierarchical Clustering Dendrogram
+
+This output attempts to highlight civilisations that are "similar" based upon their win rates vs other
+civilisations. The algorithm works by recursively grouping civilisations (or groups of civilisations) that
+are the most similar to each other until there is only 1 group. The lower down on the y-axis that
+civilisations are grouped indicates a higher degree of similarity whilst civilisations that are grouped
+higher up on the y-axis indicates a lower degree of similarity. That is to say that if two civilisations
+are linked together low down on the y-axis it means that they tend to win and lose against the same
+civiliations.
+
+
+```{r, dendro_wr}
+cvc_mat <- data_cvc_matrix(wr_avg_coef)
+plot_dendro_wr(cvc_mat)
+```
+
+```{r, saveres}
+x <- list(
+    pr = pr,
+    wr_avg = wr_avg,
+    wr_avg_coef = wr_avg_coef,
+    wr_naive = wr_naive
+)
+
+saveRDS(
+    object = x,
+    file = sprintf("data/ad_report_%s.Rds", params$type)
+)
+```

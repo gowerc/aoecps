@@ -41,14 +41,14 @@ rm_team_closed:
     leaderboard: Team Random Map
     lower_dt: 2021-08-25 01:00:00
 
-ew_solo_all:
+ew_solo_any:
     lower_elo: 1100
     lower_elo_slice: 800
     mapclass: Any
     leaderboard: 1v1 Empire Wars
     lower_dt: 2021-08-25 01:00:00
 
-ew_team_all:
+ew_team_any:
     lower_elo: 1100
     lower_elo_slice: 800
     mapclass: Any

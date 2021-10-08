@@ -40,7 +40,7 @@ dat <- tbl(con, "match_players") %>%
     inner_join(keep_matches, by = "match_id") %>%
     select(
         match_id, rating, civ, won, slot, profile_id, started, team,
-        map_type, leaderboard_id, version, finished
+        map_type, leaderboard_id, version, finished, profile_id, name
     ) %>%
     collect() %>%
     mutate(start_dt = ymd("1970-01-01") + seconds(started)) %>%
@@ -48,7 +48,6 @@ dat <- tbl(con, "match_players") %>%
     mutate(match_length = as.numeric(difftime(stop_dt, start_dt, units = "mins"))) %>%
     mutate(match_length_igm =  match_length * 1.7) %>%
     select(-started, - finished)
-
 
 
 valid_player_counts <- dat %>%
@@ -173,7 +172,7 @@ assert_that(
 
 
 players <- dat3 %>%
-    select(match_id, civ_name, rating, team)
+    select(match_id, civ_name, rating, team, profile_id, name)
 
 
 
