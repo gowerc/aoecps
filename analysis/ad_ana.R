@@ -112,6 +112,7 @@ dat3 <- dat2 %>%
     mutate(version = if_else(is.na(version), "Unknown", version))
 
 
+
 assert_that(
     nrow(dat2) == nrow(dat3),
     all(!is.na(dat3$civ)),
@@ -119,6 +120,8 @@ assert_that(
     all(!is.na(dat3$leaderboard_id))
 )
 
+dat3 <- dat3 %>%
+    drop_na(map_name)
 
 mapclass <- get_map_class()
 u_mapname <- unique(dat3$map_name)
