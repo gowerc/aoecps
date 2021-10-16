@@ -1,8 +1,8 @@
 get_meta_version <- function(start_dt) {
     case_when(
         start_dt <= ymd_hms("2021-8-09T00-00-00") ~ "A",
-        start_dt >= ymd_hms("2021-8-11T00-00-00") ~ "B",
-        TRUE ~ "ZZZ"
+        start_dt <= ymd_hms("2021-10-05T00-00-00") ~ "B",
+        TRUE ~ "C"
     )
 }
 
