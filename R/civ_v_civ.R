@@ -164,10 +164,21 @@ plot_cvc_individual <- function(civ, civdat) {
 
 
 plot_dendro_wr <- function(cvc_mat) {
+
     hmod <- hclust(
-        dist(cvc_mat - 0.5),
+        as.dist(1 - lsa::cosine(cvc_mat - 0.5)),
         method = "ward.D2"
     )
+
+    # hmod <- hclust(
+    #     dist(cvc_mat - 0.5, method = "euclidean"),
+    #     method = "ward.D2"
+    # )
+
+    # hmod <- hclust(
+    #     dist(cvc_mat - 0.5, method = "manhattan"),
+    #     method = "ward.D2"
+    # )
 
     dhc <- as.dendrogram(hmod)
 
@@ -240,7 +251,7 @@ plot_dendro_wr <- function(cvc_mat) {
         geom_segment() +
         theme_bw() +
         scale_x_continuous(breaks = c(), labels = c()) +
-        scale_y_continuous(expand = expansion(mult = c(0.25, 0.05)), breaks = pretty_breaks(10)) +
+        scale_y_continuous(trans = "log", expand = expansion(mult = c(0.25, 0.05)), breaks = pretty_breaks(10)) +
         xlab("") +
         ylab("Distance") +
         geom_text(

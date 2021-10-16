@@ -1,10 +1,13 @@
 
+
 rm_solo_any:
     lower_elo: 1200
     lower_elo_slice: 800
     mapclass: Any
     leaderboard: 1v1 Random Map
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 rm_solo_open:
     lower_elo: 1200
@@ -12,6 +15,8 @@ rm_solo_open:
     mapclass: Open
     leaderboard: 1v1 Random Map
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 rm_solo_closed:
     lower_elo: 1200
@@ -19,6 +24,8 @@ rm_solo_closed:
     mapclass: Closed
     leaderboard: 1v1 Random Map
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 rm_team_any:
     lower_elo: 2000
@@ -26,6 +33,8 @@ rm_team_any:
     mapclass: Any
     leaderboard: Team Random Map
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 rm_team_open:
     lower_elo: 2000
@@ -33,6 +42,8 @@ rm_team_open:
     mapclass: Open
     leaderboard: Team Random Map
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 rm_team_closed:
     lower_elo: 2000
@@ -40,6 +51,8 @@ rm_team_closed:
     mapclass: Closed
     leaderboard: Team Random Map
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 ew_solo_any:
     lower_elo: 1100
@@ -47,6 +60,8 @@ ew_solo_any:
     mapclass: Any
     leaderboard: 1v1 Empire Wars
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
 
 ew_team_any:
     lower_elo: 1100
@@ -54,3 +69,41 @@ ew_team_any:
     mapclass: Any
     leaderboard: Team Empire Wars
     lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
+
+rm_solo_open_rm1civ:
+    lower_elo: 1200
+    lower_elo_slice: 800
+    mapclass: Open
+    leaderboard: 1v1 Random Map
+    lower_dt: 2021-08-25 01:00:00
+    rm1civ: True
+
+
+rm_solo_closed_rm1civ:
+    lower_elo: 1200
+    lower_elo_slice: 800
+    mapclass: Closed
+    leaderboard: 1v1 Random Map
+    lower_dt: 2021-08-25 01:00:00
+    rm1civ: True
+
+
+rm_solo_open_pro:
+    lower_elo: 1700
+    lower_elo_slice: 1200
+    mapclass: Open
+    leaderboard: 1v1 Random Map
+    lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
+
+rm_solo_closed_pro:
+    lower_elo: 1700
+    lower_elo_slice: 1200
+    mapclass: Closed
+    leaderboard: 1v1 Random Map
+    lower_dt: 2021-08-25 01:00:00
+    rm1civ: False
+
