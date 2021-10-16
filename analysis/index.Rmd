@@ -125,7 +125,7 @@ I 100% agree with this. Win rate statistics are one of the most macro level tool
  
 <br/>
  
-**3) You need to account for players who play the vast majority of their games as a single civilisation**
+**4) You need to account for players who play the vast majority of their games as a single civilisation**
  
 This is a fair critique; play rates do have a large impact on the win rates. See some of my [earlier work](https://www.reddit.com/r/aoe2/comments/pl4jpz/a_brief_look_at_the_impact_of_civ_picking_on_win/) to get an idea of how they are impacted. That being said the main impact appears to be a regression towards having a neutral 50% win rate so it is likely that the most played civilisations have their win rate underestimated (I'm looking at you Franks). For the time I have attempted to *partially* address this by creating 2 cohorts in which I remove all players whose most played civilisations have a play rate > 70%.
 Again this is a long way off solving the issue but should help to somewhat account for it

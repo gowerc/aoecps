@@ -165,9 +165,14 @@ plot_cvc_individual <- function(civ, civdat) {
 
 plot_dendro_wr <- function(cvc_mat) {
 
+    # hmod <- hclust(
+    #     as.dist(1 - lsa::cosine(cvc_mat - 0.5)),
+    #     method = "ward.D2"
+    # )
+
     hmod <- hclust(
         as.dist(1 - lsa::cosine(cvc_mat - 0.5)),
-        method = "ward.D2"
+        method = "complete"
     )
 
     # hmod <- hclust(
@@ -241,7 +246,7 @@ plot_dendro_wr <- function(cvc_mat) {
 
 
     footnotes <- c(
-        "Distance is calculated based upon the Ward Method between civilisation v civilisation win rates.<br/>",
+        "Clusters are formed using complete linkage on the cosine distance between civilisation v civilisation win rates.<br/>",
         "Civilisations are coloured based upon their group.<br/>",
         "Groups are formed by applying an arbitrary cutoff that ensures there are no more than 8 unique groups."
     ) %>%
@@ -251,9 +256,9 @@ plot_dendro_wr <- function(cvc_mat) {
         geom_segment() +
         theme_bw() +
         scale_x_continuous(breaks = c(), labels = c()) +
-        scale_y_continuous(trans = "log", expand = expansion(mult = c(0.25, 0.05)), breaks = pretty_breaks(10)) +
+        scale_y_continuous(expand = expansion(mult = c(0.25, 0.05)), breaks = pretty_breaks(10)) +
         xlab("") +
-        ylab("Distance") +
+        ylab("Cosine Distance") +
         geom_text(
             aes(label = labs, y = nyend, x = x),
             inherit.aes = FALSE,
