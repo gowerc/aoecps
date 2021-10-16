@@ -98,7 +98,7 @@ In all cases, a small Laplace smoother was added to avoid issues associated with
  
 ### Removing Single Civilisation Players
  
-In some cohorts "single civilisation pickers" have been removed. In these cohorts single civilisation players are identified as those who have a played at least 10 games and who have a playrate of >70% for any single civilisation. In these cases all matches where that player participated are removed.
+In some cohorts "single civilisation pickers" have been removed. In these cohorts single civilisation players are identified as those who have a played at least 10 games and who have a playrate of >50% for any single civilisation. In these cases all matches where that player participated are removed.
  
  
 ## Frequently Asked Questions & Critiques
