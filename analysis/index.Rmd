@@ -110,6 +110,7 @@ I must add the disclaimer that the answers given to these questions are just my 
  
 I strongly believe that the game should be balanced around all levels of game play and not just the Pros / "perfect play". It doesn't matter to me if the game is balanced for the Pros if it is an unbalanced mess at the level I play it at. I think a good example of this is quick-walling. I personally (like many others who play) don't have the reaction speed nor dexterity to quick-wall like the pros do, so if a unit can be effectively countered by quick-walling should it be considered balanced? Thus my belief that more than just the Pro level needs to be considered when assessing balance. To this end I have used a cut-off of >1200 Elo (or the top ~25% of players) which I feel provides a nice balance between civilisations being played "correctly" whilst still representing a decent proportion of the player base.
  
+<br/>
  
 **2) Most people just play the meta and thus win rates are biased towards that and don't actually represent the true ability of the civilisation if they were to use all of their available strategies**
  
@@ -117,7 +118,8 @@ My current opinion is that observed win rates are a more useful metric than the 
  
 My logic is that if civilisations were truly played perfectly with no mistakes and machine like macro/micro it is highly likely that the true win rates for all match-ups are either 0 or 100%. I believe it's human error and the specific strategy selection that introduces uncertainty in the results. Because of this I believe that the theoretical "true win rates'' don't really matter; this isn't some science where we are trying to evaluate the true natural effect, it's a game that we are playing for fun and the observed win rates give information about how the game is actually being played. If a civilisation has a crazy high win rate it doesn't (at least not to me) matter if the civilisation is hypothetically balanced when "played correctly" because the majority of people who are actually playing the game are experiencing imbalance.
  
- 
+<br/>
+
 **3) You shouldn't base balance changes based on win rates**
  
 I 100% agree with this. Win rate statistics are one of the most macro level tools we have and shouldn't be the sole reason nor justification for any balance change. All they can do is help identify general potential problem areas. To inform actual balance changes we need to combine expert opinion, scenario analysis & expected outcomes from the intended game design. This is to say I disagree with the approach of civilisation X has a win rate of Y therefore we should buff them: well why is their win rate that, where do they struggle, what is our expectation for them, how does this impact the pro scene, etc.
