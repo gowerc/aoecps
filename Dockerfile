@@ -62,6 +62,7 @@ RUN Rscript -e "options(warn=2);\
         'kableExtra',\
         'ggrepel',\
         'googlesheets4',\
+        'lsa',\
         'mvtnorm'\
     ))"
 

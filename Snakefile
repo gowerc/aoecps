@@ -10,6 +10,10 @@ rule all:
         "outputs/report_rm_team_closed.html",
         "outputs/report_ew_solo_any.html",
         "outputs/report_ew_team_any.html",
+        "outputs/report_rm_solo_open_rm1civ.html",
+        "outputs/report_rm_solo_closed_rm1civ.html",
+        "outputs/report_rm_solo_open_pro.html",
+        "outputs/report_rm_solo_closed_pro.html",
         "outputs/cross.html"
 
 
@@ -80,8 +84,13 @@ report_data = [
     "data/ad_report_rm_solo_open.Rds",
     "data/ad_report_rm_team_any.Rds",
     "data/ad_report_rm_team_closed.Rds",
-    "data/ad_report_rm_team_open.Rds"
+    "data/ad_report_rm_team_open.Rds",
+    "data/ad_report_rm_solo_open_rm1civ.Rds",
+    "data/ad_report_rm_solo_closed_rm1civ.Rds",
+    "data/ad_report_rm_solo_open_pro.Rds",
+    "data/ad_report_rm_solo_closed_pro.Rds",
 ]
+
 
 rule:
     input: "analysis/cross.Rmd", report_data

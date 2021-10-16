@@ -45,3 +45,8 @@ get_opts <- function(key = NULL) {
     x2$lower_dt <- lubridate::ymd_hms(x2$lower_dt)
     x2
 }
+
+
+lgl_to_char <- function(x){
+    ifelse(x, "True", "False")
+}
