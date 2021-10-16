@@ -1,7 +1,7 @@
 import requests
 import json
 
-VERSION = "B"
+VERSION = "C"
 
 
 def api_get_meta(game="aoe2de", language="en"):
@@ -37,4 +37,4 @@ with open("./data-raw/db_meta.json", "r") as fi:
 final[VERSION] = result
 
 with open("./data-raw/db_meta.json", "w") as fi:
-    json.dump(final, fi)
+    json.dump(final, fi, indent="    ", separators=(',', ":"))
