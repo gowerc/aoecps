@@ -112,6 +112,7 @@ dat3 <- dat2 %>%
     mutate(version = if_else(is.na(version), "Unknown", version))
 
 
+
 assert_that(
     nrow(dat2) == nrow(dat3),
     all(!is.na(dat3$civ)),
@@ -119,6 +120,10 @@ assert_that(
     all(!is.na(dat3$leaderboard_id))
 )
 
+assert_that(
+    any(is.na(dat3$map_name)),
+    msg = "NA's found in `map_name`; please ensure that the `./data-raw/db_meta.json` file is up-to-date"
+)
 
 mapclass <- get_map_class()
 u_mapname <- unique(dat3$map_name)
