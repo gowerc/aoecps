@@ -120,8 +120,10 @@ assert_that(
     all(!is.na(dat3$leaderboard_id))
 )
 
-dat3 <- dat3 %>%
-    drop_na(map_name)
+assert_that(
+    any(is.na(dat3$map_name)),
+    msg = "NA's found in `map_name`; please ensure that the `./data-raw/db_meta.json` file is up-to-date"
+)
 
 mapclass <- get_map_class()
 u_mapname <- unique(dat3$map_name)
