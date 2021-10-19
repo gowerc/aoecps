@@ -21,3 +21,6 @@ Finally once done we can clean up by:
 - closing down the containers via running `docker-compose down`
 
 
+## Data Source
+
+Match data is sourced from aoe2.net. A data dictionary for this api can be found [here](https://docs.google.com/spreadsheets/d/19fbY3NV1lvlrtPvul8roxvV7KpEJzCYzzOJzwU0Z464/edit#gid=0)
