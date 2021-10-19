@@ -1,4 +1,4 @@
-# aoecps
+# Age of Statistics
 
 Small project to calculate AOE2 civilisation performance statistics
 
