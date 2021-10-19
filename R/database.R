@@ -14,21 +14,27 @@ get_connection <- function() {
 }
 
 
+
 #' @importFrom jsonlite read_json
 #' @import tibble
-#' @importFrom purrr map_df
+#' @importFrom purrr map2_df map_chr map_dbl
 #' @export
-get_game_meta <- function(){
-    x <- read_json("./data-raw/db_meta.json")
-    map_df(names(x), function(i){
-        tibble(
-            version = i,
-            string = unlist(x[[i]]$string),
-            id = unlist(x[[i]]$id),
-            type = unlist(x[[i]]$type)
-        )
-    })
-}
+get_patchmeta <- function() {
+    meta_raw <- read_json("./data/ad_patchmeta.json")
 
+    meta_raw2 <- meta_raw[!names(meta_raw) %in% "language"]
+
+    map2_df(
+        meta_raw2,
+        names(meta_raw2),
+        function(x, nam) {
+            tibble(
+                string = map_chr(x, "string"),
+                id = map_dbl(x, "id"),
+                type = nam
+            )
+        }
+    )
+}
 
 

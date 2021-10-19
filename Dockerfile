@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y \
     libglpk-dev\
     python3-pip \
     libicu-dev \
-    htop
+    htop \
+    python3.9-dev
 
 RUN python3 -m pip install snakemake
 
@@ -67,7 +68,8 @@ RUN Rscript -e "options(warn=2);\
     ))"
 
 COPY requirements.txt /
-RUN python3 -m pip install -r /requirements.txt
+RUN python3.9 -m pip install -r /requirements.txt
+ENV PYTHONPATH=/app/analysis
 
 RUN mkdir /app
 WORKDIR /app

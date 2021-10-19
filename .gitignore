@@ -11,3 +11,5 @@ Rplots.pdf
 .gsauth
 !.gitkeep
 .snakemake
+*.pyc
+__pycache__

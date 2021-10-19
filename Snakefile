@@ -20,7 +20,7 @@ rule all:
 rule db:
     shell:
         """
-        python3 ./analysis/db_update.py
+        python3.9 ./analysis/db_update.py
         """
 
 
@@ -41,8 +41,14 @@ rule killr:
 ###### VAD
 rule:
     output: "data/ad_matchmeta.Rds"
-    input: "analysis/ad_ana.R"
+    input: "analysis/ad_ana.R", "data/ad_patchmeta.json"
     shell: "Rscript {input[0]}"
+
+
+rule:
+    output: "data/ad_patchmeta.json"
+    input: "analysis/ad_patchmeta.py"
+    shell: "python3.9 {input[0]}"
 
 
 ###### Reports
