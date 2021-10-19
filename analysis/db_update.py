@@ -1,8 +1,7 @@
 import psycopg2
 import json
-import requests
 import datetime
-
+import support
 
 def db_insert_into(data, db_name):
     db_vars = dbmeta[db_name]["variables"].keys()
@@ -95,6 +94,7 @@ def db_create_table_if_not(db_name):
     cur.execute(create_table_query)
 
 
+
 def get_connection():
     with open("./bin/config.json") as fi:
         env = json.load(fi)
@@ -107,30 +107,6 @@ def get_connection():
     return conn
 
 
-def api_get_matches(
-        since,
-        count=1000,
-        game="aoe2de",
-        language="en"):
-    assert isinstance(since, int)
-    params = {
-        "since": since,
-        "count": count,
-        "game": game,
-        "language": language
-    }
-    resp = requests.get("https://aoe2.net/api/matches", params)
-    resp.raise_for_status()
-    return resp.json()
-
-
-def as_seconds(dt):
-    return int(
-        round(
-            (dt - datetime.datetime(1970, 1, 1)).total_seconds(),
-            0
-        )
-    )
 
 
 def db_get_latest():

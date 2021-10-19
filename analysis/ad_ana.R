@@ -12,22 +12,22 @@ library(forcats)
 con <- get_connection()
 
 
-meta <- get_game_meta()
+meta <- get_patchmeta()
 
 
 meta_civ <- meta %>%
     filter(type == "civ") %>%
-    select(mversion = version, civ = id, civ_name = string)
+    select(civ = id, civ_name = string)
 
 
 meta_map <- meta %>%
     filter(type == "map_type") %>%
-    select(mversion = version, map_type = id, map_name = string)
+    select(map_type = id, map_name = string)
 
 
 meta_board <- meta %>%
     filter(type == "leaderboard") %>%
-    select(mversion = version, leaderboard_id = id, leaderboard_name = string)
+    select(leaderboard_id = id, leaderboard_name = string)
 
 
 keep_matches <- tbl(con, "match_meta") %>%
@@ -69,7 +69,6 @@ valid_rating <- dat %>%
 
 valid_maptype <- dat %>%
     filter(!is.na(map_type)) %>%
-    distinct(match_id) %>%
     distinct(match_id)
 
 
@@ -101,14 +100,13 @@ dat2 <- dat %>%
     semi_join(valid_maptype, by = "match_id") %>%
     semi_join(valid_winner, by = "match_id") %>%
     anti_join(invalid_version, by = "match_id") %>%
-    anti_join(invalid_game_length, by = "match_id") %>%
-    mutate(mversion = get_meta_version(start_dt))
+    anti_join(invalid_game_length, by = "match_id")
 
 
 dat3 <- dat2 %>%
-    left_join(meta_civ, by = c("civ", "mversion")) %>%
-    left_join(meta_map, by = c("map_type", "mversion")) %>%
-    left_join(meta_board, by = c("leaderboard_id", "mversion")) %>%
+    left_join(meta_civ, by = "civ") %>%
+    left_join(meta_map, by = "map_type") %>%
+    left_join(meta_board, by = "leaderboard_id") %>%
     mutate(version = if_else(is.na(version), "Unknown", version))
 
 
@@ -117,13 +115,10 @@ assert_that(
     nrow(dat2) == nrow(dat3),
     all(!is.na(dat3$civ)),
     all(!is.na(dat3$map_type)),
-    all(!is.na(dat3$leaderboard_id))
+    all(!is.na(dat3$leaderboard_id)),
+    all(!is.na(dat3$map_name))
 )
 
-assert_that(
-    any(is.na(dat3$map_name)),
-    msg = "NA's found in `map_name`; please ensure that the `./data-raw/db_meta.json` file is up-to-date"
-)
 
 mapclass <- get_map_class()
 u_mapname <- unique(dat3$map_name)
@@ -190,3 +185,7 @@ saveRDS(
     object = players,
     file = "./data/ad_players.Rds"
 )
+
+
+
+
